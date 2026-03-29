@@ -95,11 +95,9 @@ const menuSocialLinks: {
 
 const navItems: { label: string; href: string }[] = [
   { label: "Home", href: "#home" },
-  { label: "Problem we solve", href: "#problem" },
   { label: "Services", href: "#services" },
   { label: "Process", href: "#process" },
   { label: "Projects", href: "#work" },
-  { label: "Our Difference", href: "#about" },
   { label: "Team", href: "#team" },
   { label: "Contact", href: "#contact" },
 ];
@@ -1180,61 +1178,41 @@ export default function Page() {
             </p>
           </div>
           <div className="mb-4 sm:mb-5 md:mb-6">
-            <div
+            <motion.div
               ref={problemCardsScrollRef}
               role="region"
               aria-label="Industry challenges, swipe horizontally for more"
               className="swipe-x -mx-4 flex min-h-[26rem] cursor-grab snap-x snap-mandatory items-center gap-4 overflow-x-auto py-5 pl-[max(1rem,calc(50%-8.75rem))] pr-[max(1rem,calc(50%-8.75rem))] scrollbar-hide sm:-mx-8 sm:min-h-[28rem] sm:gap-5 sm:py-6 md:hidden"
+              initial={reduceMotion ? false : { opacity: 0 }}
+              whileInView={reduceMotion ? undefined : { opacity: 1 }}
+              viewport={{ once: true, amount: "some", margin: "0px 0px -10% 0px" }}
+              transition={{ duration: 0.55, ease: brandEase }}
             >
               <div className="max-md:shrink-0 max-md:[scroll-snap-align:none]">
-                <motion.div
-                  className="h-full"
-                  initial={reduceMotion ? false : { opacity: 0 }}
-                  whileInView={reduceMotion ? undefined : { opacity: 1 }}
-                  viewport={{ once: true, amount: 0.35 }}
-                  transition={{ duration: 0.5, ease: brandEase }}
-                >
-                  <IndustryProblemCard
-                    card={problemCards[2]}
-                    decorativeClone
-                    cloneMarker="leading-03"
-                    className="pointer-events-none select-none"
-                  />
-                </motion.div>
+                <IndustryProblemCard
+                  card={problemCards[2]}
+                  decorativeClone
+                  cloneMarker="leading-03"
+                  className="pointer-events-none select-none"
+                />
               </div>
               {problemCards.map((card) => (
                 <div
                   key={card.num}
                   className="max-md:shrink-0 max-md:snap-center max-md:snap-always"
                 >
-                  <motion.div
-                    className="h-full"
-                    initial={reduceMotion ? false : { opacity: 0 }}
-                    whileInView={reduceMotion ? undefined : { opacity: 1 }}
-                    viewport={{ once: true, amount: 0.35 }}
-                    transition={{ duration: 0.5, ease: brandEase }}
-                  >
-                    <IndustryProblemCard card={card} />
-                  </motion.div>
+                  <IndustryProblemCard card={card} />
                 </div>
               ))}
               <div className="max-md:shrink-0 max-md:[scroll-snap-align:none]">
-                <motion.div
-                  className="h-full"
-                  initial={reduceMotion ? false : { opacity: 0 }}
-                  whileInView={reduceMotion ? undefined : { opacity: 1 }}
-                  viewport={{ once: true, amount: 0.35 }}
-                  transition={{ duration: 0.5, ease: brandEase }}
-                >
-                  <IndustryProblemCard
-                    card={problemCards[0]}
-                    decorativeClone
-                    cloneMarker="trailing-01"
-                    className="pointer-events-none select-none"
-                  />
-                </motion.div>
+                <IndustryProblemCard
+                  card={problemCards[0]}
+                  decorativeClone
+                  cloneMarker="trailing-01"
+                  className="pointer-events-none select-none"
+                />
               </div>
-            </div>
+            </motion.div>
             <motion.div
               className="hidden gap-5 md:grid md:grid-cols-3 md:gap-5 lg:gap-6"
               variants={staggerContainer}
@@ -1288,59 +1266,39 @@ export default function Page() {
             </p>
           </div>
           <div className="mb-4 sm:mb-5 lg:mb-6">
-            <div
+            <motion.div
               ref={capabilityCardsScrollRef}
               role="region"
               aria-label="Capabilities, swipe horizontally for more"
               className="swipe-x -mx-4 flex min-h-[30rem] cursor-grab snap-x snap-mandatory items-center gap-4 overflow-x-auto py-5 pl-[max(1rem,calc(50%-8.75rem))] pr-[max(1rem,calc(50%-8.75rem))] scrollbar-hide sm:-mx-8 sm:min-h-[32rem] sm:gap-5 sm:py-6 md:hidden"
+              initial={reduceMotion ? false : { opacity: 0 }}
+              whileInView={reduceMotion ? undefined : { opacity: 1 }}
+              viewport={{ once: true, amount: "some", margin: "0px 0px -10% 0px" }}
+              transition={{ duration: 0.55, ease: brandEase }}
             >
               <div className="max-md:shrink-0 max-md:[scroll-snap-align:none]">
-                <motion.div
-                  className="h-full"
-                  initial={reduceMotion ? false : { opacity: 0 }}
-                  whileInView={reduceMotion ? undefined : { opacity: 1 }}
-                  viewport={{ once: true, amount: 0.35 }}
-                  transition={{ duration: 0.5, ease: brandEase }}
-                >
-                  <CapabilityMobileSlide
-                    card={capabilityCards[3]}
-                    decorativeClone
-                    cloneMarker="leading-last"
-                  />
-                </motion.div>
+                <CapabilityMobileSlide
+                  card={capabilityCards[3]}
+                  decorativeClone
+                  cloneMarker="leading-last"
+                />
               </div>
               {capabilityCards.map((card, i) => (
                 <div
                   key={card.title}
                   className="max-md:shrink-0 max-md:snap-center max-md:snap-always"
                 >
-                  <motion.div
-                    className="h-full"
-                    initial={reduceMotion ? false : { opacity: 0 }}
-                    whileInView={reduceMotion ? undefined : { opacity: 1 }}
-                    viewport={{ once: true, amount: 0.35 }}
-                    transition={{ duration: 0.5, ease: brandEase }}
-                  >
-                    <CapabilityMobileSlide card={card} capabilityIndex={i} />
-                  </motion.div>
+                  <CapabilityMobileSlide card={card} capabilityIndex={i} />
                 </div>
               ))}
               <div className="max-md:shrink-0 max-md:[scroll-snap-align:none]">
-                <motion.div
-                  className="h-full"
-                  initial={reduceMotion ? false : { opacity: 0 }}
-                  whileInView={reduceMotion ? undefined : { opacity: 1 }}
-                  viewport={{ once: true, amount: 0.35 }}
-                  transition={{ duration: 0.5, ease: brandEase }}
-                >
-                  <CapabilityMobileSlide
-                    card={capabilityCards[0]}
-                    decorativeClone
-                    cloneMarker="trailing-first"
-                  />
-                </motion.div>
+                <CapabilityMobileSlide
+                  card={capabilityCards[0]}
+                  decorativeClone
+                  cloneMarker="trailing-first"
+                />
               </div>
-            </div>
+            </motion.div>
             <motion.div
               className="hidden md:grid md:grid-cols-2 md:gap-5 lg:grid-cols-4 lg:gap-6 md:cursor-default"
               variants={staggerContainer}
@@ -1618,12 +1576,19 @@ export default function Page() {
 
           {/* Role cards — mobile: uniform size; z-index 1→6 so each card stacks above the previous (1 bottom, 6 top) */}
           <div className="mx-auto max-w-[900px] lg:max-w-[1240px] xl:max-w-[1360px]">
-            <div className="relative isolate mx-auto max-w-[min(100%,24.5rem)] pb-4 min-[400px]:max-w-[27rem] sm:hidden">
+            <motion.div
+              className="relative isolate mx-auto max-w-[min(100%,24.5rem)] pb-4 min-[400px]:max-w-[27rem] sm:hidden"
+              variants={staggerContainer}
+              initial={reduceMotion ? "show" : "hidden"}
+              whileInView={reduceMotion ? undefined : "show"}
+              viewport={{ once: true, amount: 0.12, margin: "0px 0px -8% 0px" }}
+            >
               <div className="grid grid-cols-2 items-start gap-x-0">
                 <div className="flex min-w-0 flex-col gap-6 min-[400px]:gap-7">
                   {leftRoles.map((role, row) => (
-                    <div
+                    <motion.div
                       key={role.title}
+                      variants={cardRevealItem}
                       className="relative min-w-0"
                       style={{ zIndex: row * 2 + 1 }}
                     >
@@ -1631,13 +1596,14 @@ export default function Page() {
                         {...role}
                         className="flex h-[6.75rem] w-full flex-col justify-center rounded-2xl pr-5 shadow-[0_10px_28px_rgba(0,0,0,0.55)] hover:shadow-[0_10px_28px_rgba(0,0,0,0.5),0_0_40px_rgba(249,115,22,0.15)] min-[400px]:h-[7rem] min-[400px]:pr-6 [&_h4]:line-clamp-2 [&_p]:line-clamp-2 [&_p]:max-w-[9.25rem] min-[400px]:[&_p]:max-w-[10rem]"
                       />
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
                 <div className="-ml-[1.35rem] flex min-w-0 flex-col gap-6 pt-14 min-[400px]:-ml-[1.65rem] min-[400px]:gap-7 min-[400px]:pt-16">
                   {rightRoles.map((role, row) => (
-                    <div
+                    <motion.div
                       key={role.title}
+                      variants={cardRevealItem}
                       className="relative min-w-0"
                       style={{ zIndex: row * 2 + 2 }}
                     >
@@ -1645,18 +1611,18 @@ export default function Page() {
                         {...role}
                         className="flex h-[6.75rem] w-full flex-col items-end justify-center rounded-2xl pl-5 text-right shadow-[0_12px_32px_rgba(0,0,0,0.6)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.55),0_0_40px_rgba(249,115,22,0.15)] min-[400px]:h-[7rem] min-[400px]:pl-6 [&_h4]:line-clamp-2 [&_p]:line-clamp-2"
                       />
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
             {/* sm–md: 2 cols; lg+: 3×2 (directors row, then VFX row) */}
             <motion.div
               className="hidden sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-5"
               variants={staggerContainer}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.08 }}
+              initial={reduceMotion ? "show" : "hidden"}
+              whileInView={reduceMotion ? undefined : "show"}
+              viewport={{ once: true, amount: 0.12, margin: "0px 0px -8% 0px" }}
             >
               {[...leftRoles, ...rightRoles].map((role) => (
                 <motion.div key={role.title} variants={cardRevealItem}>
@@ -1905,9 +1871,9 @@ export default function Page() {
                 </span>
               </div>
             </div>
-            <div className="mx-auto flex w-full max-w-[min(100%,22rem)] flex-col items-center gap-2 text-center sm:max-w-[28rem] lg:max-w-[34rem] xl:max-w-[38rem]">
-              <MapPin className="h-[18px] w-[18px] shrink-0 text-white" />
-              <span className="text-[14px] leading-snug text-white">
+            <div className="mx-auto flex w-full max-w-[min(100%,30rem)] flex-row items-start gap-2.5 text-left sm:max-w-[34rem] md:max-w-[36rem]">
+              <MapPin className="mt-0.5 h-[18px] w-[18px] shrink-0 text-white" />
+              <span className="min-w-0 flex-1 text-[14px] leading-snug text-white">
                 123 Cloud Avenue, Tech City, CA 94088, USA
               </span>
             </div>

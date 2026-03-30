@@ -138,9 +138,9 @@
   }
 }
 
-/* Horizontal card strips: reliable touch swipe + no scroll chaining */
+/* Horizontal card strips: allow natural vertical page scroll + horizontal swipe */
 @utility swipe-x {
-  touch-action: pan-x;
+  touch-action: pan-x pan-y;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
 }

@@ -13,7 +13,7 @@ import { useHorizontalDragScroll } from "@/hooks/useHorizontalDragScroll";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import { JumblingMetric } from "@/components/JumblingMetric";
 import {
@@ -88,7 +88,6 @@ const menuSocialLinks: {
 }[] = [
   { label: "Facebook", href: "#", Icon: FacebookIcon },
   { label: "Instagram", href: "#", Icon: InstagramIcon },
-  { label: "YouTube", href: "#", Icon: YoutubeIcon },
 ];
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -263,7 +262,7 @@ function IndustryProblemCard({
   return (
     <div
       className={cn(
-        "relative flex flex-col origin-center overflow-hidden rounded-[1.75rem] border border-white/[0.12] bg-[#0A0A0A] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.35)] transition-shadow will-change-transform hover:shadow-[0_0_40px_rgba(249,115,22,0.12)]",
+        "relative flex flex-col origin-center overflow-hidden rounded-[1.75rem] border border-white/40 bg-[#0A0A0A] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.35)] transition-shadow will-change-transform hover:shadow-[0_0_40px_rgba(249,115,22,0.12)]",
         layout === "scroll" &&
           "h-[19rem] w-[17.5rem] shrink-0 sm:h-[18.5rem] sm:w-[20rem] sm:p-4 md:h-[19.5rem] md:w-[22.5rem] md:min-w-0 md:will-change-auto md:p-6 lg:h-[20rem] lg:w-[23.5rem] lg:p-8 xl:h-[21rem] xl:w-[24.5rem] xl:p-9",
         layout === "grid" &&
@@ -383,7 +382,7 @@ function CapabilityMobileSlide({
   return (
     <div
       className={cn(
-        "relative flex w-[min(17.5rem,calc(100vw-2rem))] shrink-0 origin-center flex-col rounded-2xl border border-white/[0.1] bg-[#1A1A1A] transition-shadow will-change-transform hover:shadow-[0_0_40px_rgba(249,115,22,0.15)]",
+        "relative flex w-[min(17.5rem,calc(100vw-2rem))] shrink-0 origin-center flex-col rounded-2xl border border-white/40 bg-[#1A1A1A] transition-shadow will-change-transform hover:shadow-[0_0_40px_rgba(249,115,22,0.15)]",
         !decorativeClone && "max-md:snap-center max-md:snap-always",
         decorativeClone && "max-md:[scroll-snap-align:none] pointer-events-none select-none",
       )}
@@ -403,7 +402,7 @@ function CapabilityMobileSlide({
 
 function CapabilityGridCard({ card }: { card: CapabilityCardData }) {
   return (
-    <div className="flex flex-col rounded-2xl border border-white/[0.1] bg-[#1A1A1A] transition-shadow hover:shadow-[0_0_40px_rgba(249,115,22,0.15)] md:w-auto">
+    <div className="flex flex-col rounded-2xl border border-white/40 bg-[#1A1A1A] transition-shadow hover:shadow-[0_0_40px_rgba(249,115,22,0.15)] md:w-auto">
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl">
         <CapabilityCardBody card={card} />
       </div>
@@ -586,7 +585,7 @@ function ProjectCard({
   );
 
   return (
-    <div className="flex w-full min-w-0 flex-col items-stretch overflow-hidden rounded-2xl border border-white/[0.12] bg-[#1A1A1A] min-[500px]:flex-row lg:flex-col">
+    <div className="flex w-full min-w-0 flex-col items-stretch overflow-hidden rounded-2xl border border-white/40 bg-[#1A1A1A] min-[500px]:flex-row lg:flex-col">
       <div className="relative h-[min(12.5rem,42vw)] min-h-[9.5rem] w-full shrink-0 min-[500px]:h-auto min-[500px]:!self-stretch min-[500px]:w-[44%] lg:h-[340px] xl:h-[380px] lg:w-full lg:self-auto">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -932,17 +931,25 @@ export default function Page() {
   return (
     <main className="bg-[#0A0A0A] text-white">
       {/* ─── Mobile Menu Overlay ─────────────────────────────────── */}
-      {menuOpen && (
-        <div className="fixed inset-0 z-50 flex min-h-dvh min-h-screen flex-col bg-black lg:hidden">
+      <AnimatePresence initial={false} mode="wait">
+        {menuOpen && (
+          <motion.div
+            key="mobile-menu"
+            className="fixed inset-0 z-50 flex h-dvh flex-col bg-black/90 lg:hidden"
+            initial={{ x: "14%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: "14%", opacity: 0 }}
+            transition={{ duration: 0.32, ease: [0.25, 0.46, 0.45, 0.94] }}
+          >
           <button
             onClick={() => setMenuOpen(false)}
             aria-label="Close menu"
-            className="absolute right-6 top-6 z-10 text-white"
+            className="absolute right-5 top-5 z-10 p-1 text-white sm:right-8 sm:top-6"
           >
             <X className="h-8 w-8" />
           </button>
           <nav
-            className="flex w-full flex-1 flex-col items-center justify-center gap-5 overflow-y-auto px-6 pb-6 pt-24"
+            className="flex w-full flex-1 min-h-0 flex-col items-center justify-center gap-5 overflow-y-auto px-6 py-6"
             aria-label="Primary"
           >
             {navItems.map(({ label, href }) => (
@@ -971,8 +978,9 @@ export default function Page() {
               ))}
             </div>
           </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ═══════════════════════════════════════════════════════════
           SECTION 1 — HERO
@@ -1029,7 +1037,7 @@ export default function Page() {
           <button
             onClick={() => setMenuOpen(true)}
             aria-label="Open menu"
-            className="text-white p-1 mt-1"
+            className="text-white p-1 mr-1 sm:mr-2 mt-1"
           >
             <Menu className="h-7 w-7" />
           </button>
@@ -1193,7 +1201,7 @@ export default function Page() {
                 ({ src, alt }, i) => (
                   <div
                     key={`${src}-${i}`}
-                    className="relative h-16 w-16 shrink-0 min-[420px]:h-[4.5rem] min-[420px]:w-[4.5rem] sm:h-20 sm:w-20 md:h-20 md:w-20 lg:h-24 lg:w-24 xl:h-28 xl:w-28"
+                    className="relative h-[4.5rem] w-[4.5rem] shrink-0 min-[420px]:h-20 min-[420px]:w-20 sm:h-20 sm:w-20 md:h-20 md:w-20 lg:h-24 lg:w-24 xl:h-28 xl:w-28"
                   >
                     <Image
                       src={src}
@@ -1232,7 +1240,7 @@ export default function Page() {
         style={{ backgroundImage: SECTION_ORANGE_FLOW_GRADIENT }}
       >
         <div className="w-full max-w-[1280px] xl:max-w-[1440px] 2xl:max-w-[1520px] mx-auto">
-          <div className="flex flex-col items-center text-center mb-7 sm:mb-8 lg:mb-10">
+          <div className="flex flex-col items-center text-center mb-4 sm:mb-8 lg:mb-10">
             <p className="text-[#F97316] uppercase text-[13px] font-bold tracking-[0.22em] mb-4">
               THE INDUSTRY PROBLEM
             </p>
@@ -1254,7 +1262,7 @@ export default function Page() {
               ref={problemCardsScrollRef}
               role="region"
               aria-label="Industry challenges, swipe horizontally for more"
-              className="swipe-x -mx-4 flex min-h-[24rem] cursor-grab snap-x snap-mandatory items-center gap-4 overflow-x-auto py-2 pl-[max(1rem,calc(50%-8.75rem))] pr-[max(1rem,calc(50%-8.75rem))] scrollbar-hide sm:-mx-8 sm:min-h-[26rem] sm:gap-4 sm:py-6 sm:pl-[max(1rem,calc(50%-10rem))] sm:pr-[max(1rem,calc(50%-10rem))] md:pl-[max(1rem,calc(50%-11.25rem))] md:pr-[max(1rem,calc(50%-11.25rem))] lg:min-h-[22rem] lg:gap-2 lg:py-5 lg:pl-[max(1rem,calc(50%-11.75rem))] lg:pr-[max(1rem,calc(50%-11.75rem))] md:hidden xl:hidden"
+              className="swipe-x -mx-4 flex min-h-[24rem] cursor-grab snap-x snap-mandatory items-center gap-4 overflow-x-auto pb-6 pt-3 pl-[max(1rem,calc(50%-8.75rem))] pr-[max(1rem,calc(50%-8.75rem))] scrollbar-hide sm:-mx-8 sm:min-h-[26rem] sm:gap-4 sm:pb-7 sm:pt-4 sm:pl-[max(1rem,calc(50%-10rem))] sm:pr-[max(1rem,calc(50%-10rem))] md:pl-[max(1rem,calc(50%-11.25rem))] md:pr-[max(1rem,calc(50%-11.25rem))] lg:min-h-[22rem] lg:gap-2 lg:py-5 lg:pl-[max(1rem,calc(50%-11.75rem))] lg:pr-[max(1rem,calc(50%-11.75rem))] md:hidden xl:hidden"
               initial={reduceMotion ? false : { opacity: 0 }}
               whileInView={reduceMotion ? undefined : { opacity: 1 }}
               viewport={{ once: true, amount: "some", margin: "0px 0px -10% 0px" }}
@@ -1344,7 +1352,7 @@ export default function Page() {
         style={{ backgroundImage: SECTION_ORANGE_FLOW_GRADIENT }}
       >
         <div className="w-full max-w-[1280px] xl:max-w-[1440px] 2xl:max-w-[1520px] mx-auto">
-          <div className="flex flex-col items-center text-center mb-7 sm:mb-8 lg:mb-10">
+          <div className="flex flex-col items-center text-center mb-4 sm:mb-8 lg:mb-10">
             <p className="text-[#F97316] uppercase text-[13px] font-bold tracking-[0.22em] mb-4">
               OUR CAPABILITIES
             </p>
@@ -1366,7 +1374,7 @@ export default function Page() {
               ref={capabilityCardsScrollRef}
               role="region"
               aria-label="Capabilities, swipe horizontally for more"
-              className="swipe-x -mx-4 flex min-h-[30rem] cursor-grab snap-x snap-mandatory items-center gap-4 overflow-x-auto py-2 pl-[max(1rem,calc(50%-8.75rem))] pr-[max(1rem,calc(50%-8.75rem))] scrollbar-hide sm:-mx-8 sm:min-h-[32rem] sm:gap-5 sm:py-6 md:hidden"
+              className="swipe-x -mx-4 flex min-h-0 cursor-grab snap-x snap-mandatory items-center gap-4 overflow-x-auto pb-6 pt-3 pl-[max(1rem,calc(50%-8.75rem))] pr-[max(1rem,calc(50%-8.75rem))] scrollbar-hide sm:-mx-8 sm:min-h-0 sm:gap-5 sm:pb-7 sm:pt-4 md:hidden"
               initial={reduceMotion ? false : { opacity: 0 }}
               whileInView={reduceMotion ? undefined : { opacity: 1 }}
               viewport={{ once: true, amount: "some", margin: "0px 0px -10% 0px" }}
@@ -1583,7 +1591,7 @@ export default function Page() {
               <motion.div
                 key={title}
                 variants={cardRevealItem}
-                className="relative flex min-h-[17.5rem] min-w-0 flex-col overflow-hidden rounded-xl border border-white/[0.1] bg-[#141414] shadow-[0_8px_32px_rgba(0,0,0,0.35)] transition-shadow hover:shadow-[0_0_40px_rgba(249,115,22,0.12)] sm:min-h-[18.5rem] md:min-h-[19rem] lg:min-h-[20rem] xl:min-h-[21.5rem]"
+                className="relative flex min-h-[17.5rem] min-w-0 flex-col overflow-hidden rounded-xl border border-white/40 bg-[#141414] shadow-[0_8px_32px_rgba(0,0,0,0.35)] transition-shadow hover:shadow-[0_0_40px_rgba(249,115,22,0.12)] sm:min-h-[18.5rem] md:min-h-[19rem] lg:min-h-[20rem] xl:min-h-[21.5rem]"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -1777,7 +1785,10 @@ export default function Page() {
             variants={fadeUpItem}
             className="mx-auto flex w-full max-w-[min(100%,22rem)] flex-col items-stretch justify-center px-1 sm:max-w-none sm:items-center sm:px-0"
           >
-            <Button className="flex h-10 w-full items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:h-12 sm:w-auto sm:px-8 sm:text-sm">
+            <Button
+              onClick={() => scrollToSection("contact-form")}
+              className="flex h-10 w-full items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:h-12 sm:w-auto sm:px-8 sm:text-sm"
+            >
               GET A CUSTOM QUOTE
             </Button>
           </motion.div>
@@ -1982,9 +1993,9 @@ export default function Page() {
                 </span>
               </div>
             </div>
-            <div className="mx-auto flex w-full max-w-[min(100%,30rem)] flex-row items-center justify-center gap-2.5 text-center sm:max-w-[34rem] md:max-w-[36rem]">
+            <div className="mx-auto flex w-full flex-row items-start justify-center gap-2.5 sm:max-w-[34rem] md:max-w-[36rem]">
               <MapPin className="mt-0.5 h-[18px] w-[18px] shrink-0 text-white" />
-              <span className="min-w-0 text-[14px] leading-snug text-white text-center">
+              <span className="min-w-0 text-[14px] leading-snug text-white text-left">
                 123 Cloud Avenue, Tech City, CA 94088, USA
               </span>
             </div>

@@ -169,7 +169,8 @@ function useCarouselCenterScale(
     const el = scrollRef.current;
     if (!el) return;
 
-    const isMobile = () => window.matchMedia("(max-width: 767px)").matches;
+    // Apply the "center grow + side peeking" effect on mobile + tablet widths.
+    const isMobile = () => window.matchMedia("(max-width: 1279px)").matches;
     const motionOk = () =>
       !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -192,6 +193,12 @@ function useCarouselCenterScale(
         return;
       }
       const rect = el.getBoundingClientRect();
+      // If the element is not actually laid out (e.g. hidden by a breakpoint),
+      // avoid applying transforms based on a zero-size rect.
+      if (rect.width < 1) {
+        clearScales();
+        return;
+      }
       const mid = rect.left + rect.width / 2;
       const falloff = Math.max(rect.width * 0.4, 190);
       const lerp = 0.32;
@@ -244,18 +251,27 @@ function IndustryProblemCard({
   className,
   decorativeClone,
   cloneMarker,
+  variant,
 }: {
   card: ProblemCardData;
   className?: string;
   decorativeClone?: boolean;
   cloneMarker?: ProblemCloneMarker;
+  variant?: "scroll" | "grid";
 }) {
+  const layout: "scroll" | "grid" = variant ?? "scroll";
   return (
     <div
       className={cn(
-        "relative flex h-[19rem] w-[17.5rem] shrink-0 origin-center flex-col overflow-hidden rounded-[1.75rem] border border-white/[0.12] bg-[#0A0A0A] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.35)] transition-shadow will-change-transform hover:shadow-[0_0_40px_rgba(249,115,22,0.12)] sm:h-[20rem] sm:w-[17.5rem] md:h-auto md:min-h-[20rem] md:w-auto md:min-w-0 md:will-change-auto md:p-6 lg:min-h-[22rem] lg:p-8 xl:min-h-[23rem] xl:p-9",
-        !decorativeClone && "max-md:snap-center max-md:snap-always",
-        decorativeClone && "max-md:[scroll-snap-align:none]",
+        "relative flex flex-col origin-center overflow-hidden rounded-[1.75rem] border border-white/[0.12] bg-[#0A0A0A] p-5 shadow-[0_8px_32px_rgba(0,0,0,0.35)] transition-shadow will-change-transform hover:shadow-[0_0_40px_rgba(249,115,22,0.12)]",
+        layout === "scroll" &&
+          "h-[19rem] w-[17.5rem] shrink-0 sm:h-[18.5rem] sm:w-[20rem] sm:p-4 md:h-[19.5rem] md:w-[22.5rem] md:min-w-0 md:will-change-auto md:p-6 lg:h-[20rem] lg:w-[23.5rem] lg:p-8 xl:h-[21rem] xl:w-[24.5rem] xl:p-9",
+        layout === "grid" &&
+          "h-[19rem] w-full shrink md:min-w-0 sm:h-[18.5rem] sm:p-4 md:h-[19.5rem] md:p-6 lg:h-[20rem] lg:p-8 xl:h-[22.5rem] xl:p-9",
+        layout === "scroll" && !decorativeClone && "max-xl:snap-center max-xl:snap-always",
+        layout === "scroll" &&
+          decorativeClone &&
+          "max-xl:[scroll-snap-align:none]",
         className
       )}
       style={{
@@ -271,10 +287,10 @@ function IndustryProblemCard({
       data-problem-card={decorativeClone ? undefined : card.num}
       data-problem-clone={cloneMarker}
     >
-      <span className="font-display flex-none text-[#F97316] text-[44px] leading-none sm:text-[52px] lg:text-[64px]">
+      <span className="font-display flex-none text-[#F97316] text-[44px] leading-none sm:text-[48px] lg:text-[64px]">
         {card.num}
       </span>
-      <div className="mt-auto flex flex-col pt-6">
+      <div className="mt-auto flex flex-col pt-6 sm:pt-5">
         <h3 className="mb-2 text-[15px] font-bold uppercase leading-snug text-white sm:text-[16px] lg:text-[18px]">
           {card.title}
         </h3>
@@ -304,7 +320,7 @@ const capabilityCards = [
   {
     title: "MOTION DESIGN",
     description:
-      "Kinetic typography, animated brand systems, and broadcast-ready motion graphics that make your message impossible to ignore.",
+      "Kinetic typography, animated brand systems, and broadcast-ready motion graphics that make your message impossible to ignore and truly unforgettable impact.",
     tags: ["AE", "MOTION", "BRAND"],
     image: "/capabilities/motiondesign.webp",
   },
@@ -570,8 +586,8 @@ function ProjectCard({
   );
 
   return (
-    <div className="flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/[0.12] bg-[#1A1A1A] min-[500px]:flex-row lg:flex-col">
-      <div className="relative h-[min(12.5rem,42vw)] min-h-[9.5rem] w-full shrink-0 sm:h-[12.5rem] min-[500px]:h-auto min-[500px]:w-[44%] min-[500px]:self-stretch lg:h-[280px] xl:h-[300px] lg:w-full lg:self-auto">
+    <div className="flex w-full min-w-0 flex-col items-stretch overflow-hidden rounded-2xl border border-white/[0.12] bg-[#1A1A1A] min-[500px]:flex-row lg:flex-col">
+      <div className="relative h-[min(12.5rem,42vw)] min-h-[9.5rem] w-full shrink-0 sm:h-[12.5rem] min-[500px]:h-auto min-[500px]:!self-stretch min-[500px]:w-[44%] lg:h-[340px] xl:h-[380px] lg:w-full lg:self-auto">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={imageSrc}
@@ -694,6 +710,26 @@ export default function Page() {
   useHorizontalDragScroll(problemCardsScrollRef);
   useHorizontalDragScroll(capabilityCardsScrollRef);
 
+  const scrollToSection = (id: string) => {
+    setMenuOpen(false);
+    // Smooth scroll for single-page navigation with an offset.
+    // `scrollIntoView()` doesn't let us reliably apply offsets, so we read
+    // the element's `scroll-margin-top` (Tailwind `scroll-mt-*`) and subtract it.
+    requestAnimationFrame(() => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const computed = window.getComputedStyle(el);
+      const scrollMarginTop = Number.parseFloat(computed.scrollMarginTop || "0");
+      const offset = Number.isFinite(scrollMarginTop) ? scrollMarginTop : 0;
+      // For the contact page, we want the *full* contact form to be visible
+      // (the CTA banner above should not remain peeking at the top).
+      const extraDown = id === "contact-form" ? 120 : id === "work" ? 60 : 0;
+      const top = window.scrollY + rect.top - offset + extraDown;
+      window.scrollTo({ top, behavior: "smooth" });
+    });
+  };
+
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => setReduceMotion(mq.matches);
@@ -706,7 +742,9 @@ export default function Page() {
     const el = problemCardsScrollRef.current;
     if (!el) return;
     const centerCard01 = () => {
-      if (window.matchMedia("(min-width: 768px)").matches) return;
+      // Carousel is visible up to `xl` (we use `xl:hidden` for it),
+      // so keep this centering logic in sync with that.
+      if (window.matchMedia("(min-width: 1280px)").matches) return;
       const card01 = el.querySelector<HTMLElement>('[data-problem-card="01"]');
       if (!card01) return;
       centerChildInHorizontalScroller(el, card01);
@@ -724,7 +762,11 @@ export default function Page() {
     const el = problemCardsScrollRef.current;
     if (!el) return;
 
-    const isDesktop = () => window.matchMedia("(min-width: 768px)").matches;
+    // Keep looping logic enabled for the same breakpoints as the carousel UI.
+    const isDesktop = () => window.matchMedia("(min-width: 1280px)").matches;
+
+    const directionRef = { current: null as "left" | "right" | null };
+    let lastScrollLeft = el.scrollLeft;
 
     const handleLoopJump = () => {
       if (isDesktop()) return;
@@ -741,6 +783,9 @@ export default function Page() {
 
       const scRect = el.getBoundingClientRect();
       const mid = scRect.left + scRect.width / 2;
+      const maxScrollLeft = el.scrollWidth - el.clientWidth;
+      const nearEnd = el.scrollLeft >= maxScrollLeft - 2;
+      const nearStart = el.scrollLeft <= 2;
       const dist = (node: HTMLElement) => {
         const r = node.getBoundingClientRect();
         const cx = r.left + r.width / 2;
@@ -759,6 +804,19 @@ export default function Page() {
       }
       if (!best) return;
 
+      // On tablet widths, snap can keep you "stuck" on card 03
+      // (trailing clone isn't picked as a best snap target).
+      // If the user swiped to the end, loop back to card 01.
+      if (directionRef.current === "right" && nearEnd) {
+        centerChildInHorizontalScroller(el, r1);
+        return;
+      }
+      // If the user swiped to the start, loop back to card 03.
+      if (directionRef.current === "left" && nearStart) {
+        centerChildInHorizontalScroller(el, r3);
+        return;
+      }
+
       if (best === cTrailing) {
         centerChildInHorizontalScroller(el, r1);
       } else if (best === cLeading) {
@@ -768,6 +826,11 @@ export default function Page() {
 
     let debounceTimer: ReturnType<typeof setTimeout> | undefined;
     const onScrollDebounce = () => {
+      // Remember direction so we can decide which loop transition to trigger.
+      const next = el.scrollLeft;
+      if (next > lastScrollLeft + 0.5) directionRef.current = "right";
+      else if (next < lastScrollLeft - 0.5) directionRef.current = "left";
+      lastScrollLeft = next;
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(handleLoopJump, 120);
     };
@@ -916,7 +979,7 @@ export default function Page() {
       ═══════════════════════════════════════════════════════════ */}
       <section
         id="home"
-        className="relative flex min-h-screen scroll-mt-20 flex-col justify-center overflow-hidden"
+        className="relative flex min-h-[88dvh] sm:min-h-[90dvh] md:min-h-[92dvh] lg:min-h-screen scroll-mt-20 flex-col justify-center overflow-hidden"
       >
         <div
           className="absolute inset-0 z-0 bg-[#0A0A0A]"
@@ -1001,7 +1064,10 @@ export default function Page() {
             ))}
           </div>
           <div className="flex justify-end items-center min-w-0">
-            <Button className="flex h-10 shrink-0 items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-sm font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:px-8">
+            <Button
+              onClick={() => scrollToSection("contact-form")}
+              className="flex h-10 shrink-0 items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-sm font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:px-8"
+            >
               Inquire Now
             </Button>
           </div>
@@ -1040,10 +1106,16 @@ export default function Page() {
               industry measures itself against.
             </p>
             <div className="mx-auto flex w-full max-w-[min(100%,22rem)] flex-col items-stretch justify-center gap-3 px-1 sm:max-w-none sm:w-auto sm:flex-row sm:items-center sm:px-0">
-              <Button className="flex h-10 w-full items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:h-12 sm:w-auto sm:px-8 sm:text-sm">
+              <Button
+                onClick={() => scrollToSection("contact-form")}
+                className="flex h-10 w-full items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:h-12 sm:w-auto sm:px-8 sm:text-sm"
+              >
                 INQUIRE ABOUT OUR SERVICES
               </Button>
-              <Button className="flex h-10 w-full items-center justify-center gap-2 rounded-[12px] border border-white bg-transparent px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/10 sm:h-12 sm:w-auto sm:px-8 sm:text-sm">
+              <Button
+                onClick={() => scrollToSection("work")}
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-[12px] border border-white bg-transparent px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/10 sm:h-12 sm:w-auto sm:px-8 sm:text-sm"
+              >
                 <Play className="h-4 w-4 fill-white text-white" />
                 VIEW OUR WORK
               </Button>
@@ -1164,8 +1236,8 @@ export default function Page() {
             <p className="text-[#F97316] uppercase text-[13px] font-bold tracking-[0.22em] mb-4">
               THE INDUSTRY PROBLEM
             </p>
-            <h2 className="font-display italic uppercase text-white text-[32px] sm:text-[40px] md:text-[48px] lg:text-[56px] leading-tight max-w-[15.5rem] min-[400px]:max-w-[17rem] sm:max-w-[20rem] md:max-w-[720px] lg:max-w-[820px] xl:max-w-[920px] mb-4">
-              GREAT BRANDS DESERVE BETTER THAN AVERAGE PRODUCTION
+            <h2 className="font-display italic uppercase text-white text-[32px] sm:text-[40px] md:text-[48px] lg:text-[56px] leading-tight max-w-full md:max-w-[720px] lg:max-w-[820px] xl:max-w-[920px] mb-4">
+              GREAT BRANDS DESERVE<br className="sm:hidden" /> BETTER<br className="hidden sm:block lg:hidden" /> THAN<br className="sm:hidden" /> AVERAGE PRODUCTIONS
             </h2>
             <p
               className={cn(
@@ -1177,44 +1249,48 @@ export default function Page() {
               and the reason they partner with us.
             </p>
           </div>
-          <div className="mb-4 sm:mb-5 md:mb-6">
+          <div className="mb-5 sm:mb-6 md:mb-7 lg:mb-8 xl:mb-9">
             <motion.div
               ref={problemCardsScrollRef}
               role="region"
               aria-label="Industry challenges, swipe horizontally for more"
-              className="swipe-x -mx-4 flex min-h-[26rem] cursor-grab snap-x snap-mandatory items-center gap-4 overflow-x-auto py-5 pl-[max(1rem,calc(50%-8.75rem))] pr-[max(1rem,calc(50%-8.75rem))] scrollbar-hide sm:-mx-8 sm:min-h-[28rem] sm:gap-5 sm:py-6 md:hidden"
+              className="swipe-x -mx-4 flex min-h-[24rem] cursor-grab snap-x snap-mandatory items-center gap-4 overflow-x-auto py-5 pl-[max(1rem,calc(50%-8.75rem))] pr-[max(1rem,calc(50%-8.75rem))] scrollbar-hide sm:-mx-8 sm:min-h-[26rem] sm:gap-4 sm:py-6 sm:pl-[max(1rem,calc(50%-10rem))] sm:pr-[max(1rem,calc(50%-10rem))] md:pl-[max(1rem,calc(50%-11.25rem))] md:pr-[max(1rem,calc(50%-11.25rem))] lg:min-h-[22rem] lg:gap-2 lg:py-5 lg:pl-[max(1rem,calc(50%-11.75rem))] lg:pr-[max(1rem,calc(50%-11.75rem))] md:hidden xl:hidden"
               initial={reduceMotion ? false : { opacity: 0 }}
               whileInView={reduceMotion ? undefined : { opacity: 1 }}
               viewport={{ once: true, amount: "some", margin: "0px 0px -10% 0px" }}
               transition={{ duration: 0.55, ease: brandEase }}
             >
-              <div className="max-md:shrink-0 max-md:[scroll-snap-align:none]">
+              <div className="max-xl:shrink-0 max-xl:[scroll-snap-align:none]">
                 <IndustryProblemCard
                   card={problemCards[2]}
                   decorativeClone
                   cloneMarker="leading-03"
                   className="pointer-events-none select-none"
+                  variant="scroll"
                 />
               </div>
               {problemCards.map((card) => (
                 <div
                   key={card.num}
-                  className="max-md:shrink-0 max-md:snap-center max-md:snap-always"
+                  className="max-xl:shrink-0 max-xl:snap-center max-xl:snap-always"
                 >
-                  <IndustryProblemCard card={card} />
+                  <IndustryProblemCard card={card} variant="scroll" />
                 </div>
               ))}
-              <div className="max-md:shrink-0 max-md:[scroll-snap-align:none]">
+              <div className="max-xl:shrink-0 max-xl:[scroll-snap-align:none]">
                 <IndustryProblemCard
                   card={problemCards[0]}
                   decorativeClone
                   cloneMarker="trailing-01"
                   className="pointer-events-none select-none"
+                  variant="scroll"
                 />
               </div>
             </motion.div>
+
+            {/* Medium screens (tablets): stacked single-column grid */}
             <motion.div
-              className="hidden gap-5 md:grid md:grid-cols-3 md:gap-5 lg:gap-6"
+              className="hidden md:grid md:grid-cols-1 md:gap-5 md:justify-items-center xl:hidden"
               variants={staggerContainer}
               initial="hidden"
               whileInView="show"
@@ -1222,13 +1298,33 @@ export default function Page() {
             >
               {problemCards.map((card) => (
                 <motion.div key={card.num} variants={cardRevealItem}>
-                  <IndustryProblemCard card={card} />
+                  <IndustryProblemCard
+                    card={card}
+                    variant="grid"
+                    className="w-[28.5rem] max-w-full"
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+            <motion.div
+              className="hidden xl:grid xl:grid-cols-3 xl:gap-4"
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.2 }}
+            >
+              {problemCards.map((card) => (
+                <motion.div key={card.num} variants={cardRevealItem}>
+                  <IndustryProblemCard card={card} variant="grid" />
                 </motion.div>
               ))}
             </motion.div>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full max-w-[min(100%,22rem)] sm:max-w-none sm:w-auto mx-auto px-1 sm:px-0">
-            <Button className="flex h-10 w-full items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:h-12 sm:w-auto sm:px-8 sm:text-sm">
+            <Button
+              onClick={() => scrollToSection("contact-form")}
+              className="flex h-10 w-full items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:h-12 sm:w-auto sm:px-8 sm:text-sm"
+            >
               TALK TO US ABOUT YOUR BRAND
             </Button>
             <Button className="flex h-10 w-full items-center justify-center gap-2 rounded-[12px] border border-white bg-transparent px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/10 sm:h-12 sm:w-auto sm:px-8 sm:text-sm">
@@ -1265,7 +1361,7 @@ export default function Page() {
               one roof.
             </p>
           </div>
-          <div className="mb-4 sm:mb-5 lg:mb-6">
+          <div className="mb-5 sm:mb-6 lg:mb-7 xl:mb-8">
             <motion.div
               ref={capabilityCardsScrollRef}
               role="region"
@@ -1314,7 +1410,10 @@ export default function Page() {
             </motion.div>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full max-w-[min(100%,22rem)] sm:max-w-none sm:w-auto mx-auto px-1 sm:px-0">
-            <Button className="flex h-10 w-full items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:h-12 sm:w-auto sm:px-8 sm:text-sm">
+            <Button
+                onClick={() => scrollToSection("contact-form")}
+              className="flex h-10 w-full items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:h-12 sm:w-auto sm:px-8 sm:text-sm"
+            >
               REQUEST A CUSTOM QUOTE
             </Button>
             <Button className="flex h-10 w-full items-center justify-center gap-2 rounded-[12px] border border-white bg-transparent px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/10 sm:h-12 sm:w-auto sm:px-8 sm:text-sm">
@@ -1388,7 +1487,10 @@ export default function Page() {
             })}
           </motion.div>
           <div className="mt-12 sm:mt-14 lg:mt-16 w-full max-w-[min(100%,22rem)] sm:max-w-none mx-auto px-1 sm:px-0 flex justify-center">
-            <Button className="flex h-10 w-full items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:h-12 sm:w-auto sm:min-w-[300px] sm:px-8 sm:text-sm">
+            <Button
+              onClick={() => scrollToSection("contact-form")}
+              className="flex h-10 w-full items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:h-12 sm:w-auto sm:min-w-[300px] sm:px-8 sm:text-sm"
+            >
               BOOK A STRATEGY CALL
             </Button>
           </div>
@@ -1425,10 +1527,16 @@ export default function Page() {
             ))}
           </motion.div>
           <div className="mx-auto flex w-full max-w-[min(100%,22rem)] flex-col items-stretch justify-center gap-3 sm:max-w-none sm:w-auto sm:flex-row sm:items-center px-1 sm:px-0">
-            <Button className="flex h-10 w-full items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:h-12 sm:w-auto sm:px-8 sm:text-sm">
+            <Button
+              onClick={() => scrollToSection("contact-form")}
+              className="flex h-10 w-full items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:h-12 sm:w-auto sm:px-8 sm:text-sm"
+            >
               GET RESULTS LIKE THIS
             </Button>
-            <Button className="flex h-10 w-full items-center justify-center gap-2 rounded-[12px] border border-white bg-transparent px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/10 sm:h-12 sm:w-auto sm:px-8 sm:text-sm">
+            <Button
+              onClick={() => scrollToSection("work")}
+              className="flex h-10 w-full items-center justify-center gap-2 rounded-[12px] border border-white bg-transparent px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/10 sm:h-12 sm:w-auto sm:px-8 sm:text-sm"
+            >
               <Play className="h-4 w-4 fill-white text-white" />
               VIEW OUR WORK
             </Button>
@@ -1506,7 +1614,10 @@ export default function Page() {
 
           {/* CTA — same mobile width cap as Proof of Impact / dual CTAs */}
           <div className="mx-auto flex w-full max-w-[min(100%,22rem)] flex-col items-stretch justify-center px-1 sm:max-w-none sm:items-center sm:px-0">
-            <Button className="flex h-10 w-full items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:h-12 sm:w-auto sm:px-8 sm:text-sm">
+            <Button
+              onClick={() => scrollToSection("contact-form")}
+              className="flex h-10 w-full items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:h-12 sm:w-auto sm:px-8 sm:text-sm"
+            >
               BOOK A STRATEGY CALL
             </Button>
           </div>
@@ -1871,9 +1982,9 @@ export default function Page() {
                 </span>
               </div>
             </div>
-            <div className="mx-auto flex w-full max-w-[min(100%,30rem)] flex-row items-start gap-2.5 text-left sm:max-w-[34rem] md:max-w-[36rem]">
+            <div className="mx-auto flex w-full max-w-[min(100%,30rem)] flex-row items-center justify-center gap-2.5 text-center sm:max-w-[34rem] md:max-w-[36rem]">
               <MapPin className="mt-0.5 h-[18px] w-[18px] shrink-0 text-white" />
-              <span className="min-w-0 flex-1 text-[14px] leading-snug text-white">
+              <span className="min-w-0 text-[14px] leading-snug text-white text-center">
                 123 Cloud Avenue, Tech City, CA 94088, USA
               </span>
             </div>

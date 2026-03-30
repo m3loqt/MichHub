@@ -1254,7 +1254,7 @@ export default function Page() {
               ref={problemCardsScrollRef}
               role="region"
               aria-label="Industry challenges, swipe horizontally for more"
-              className="swipe-x -mx-4 flex min-h-[24rem] cursor-grab snap-x snap-mandatory items-center gap-4 overflow-x-auto py-5 pl-[max(1rem,calc(50%-8.75rem))] pr-[max(1rem,calc(50%-8.75rem))] scrollbar-hide sm:-mx-8 sm:min-h-[26rem] sm:gap-4 sm:py-6 sm:pl-[max(1rem,calc(50%-10rem))] sm:pr-[max(1rem,calc(50%-10rem))] md:pl-[max(1rem,calc(50%-11.25rem))] md:pr-[max(1rem,calc(50%-11.25rem))] lg:min-h-[22rem] lg:gap-2 lg:py-5 lg:pl-[max(1rem,calc(50%-11.75rem))] lg:pr-[max(1rem,calc(50%-11.75rem))] md:hidden xl:hidden"
+              className="swipe-x -mx-4 flex min-h-[24rem] cursor-grab snap-x snap-mandatory items-center gap-4 overflow-x-auto py-2 pl-[max(1rem,calc(50%-8.75rem))] pr-[max(1rem,calc(50%-8.75rem))] scrollbar-hide sm:-mx-8 sm:min-h-[26rem] sm:gap-4 sm:py-6 sm:pl-[max(1rem,calc(50%-10rem))] sm:pr-[max(1rem,calc(50%-10rem))] md:pl-[max(1rem,calc(50%-11.25rem))] md:pr-[max(1rem,calc(50%-11.25rem))] lg:min-h-[22rem] lg:gap-2 lg:py-5 lg:pl-[max(1rem,calc(50%-11.75rem))] lg:pr-[max(1rem,calc(50%-11.75rem))] md:hidden xl:hidden"
               initial={reduceMotion ? false : { opacity: 0 }}
               whileInView={reduceMotion ? undefined : { opacity: 1 }}
               viewport={{ once: true, amount: "some", margin: "0px 0px -10% 0px" }}
@@ -1366,7 +1366,7 @@ export default function Page() {
               ref={capabilityCardsScrollRef}
               role="region"
               aria-label="Capabilities, swipe horizontally for more"
-              className="swipe-x -mx-4 flex min-h-[30rem] cursor-grab snap-x snap-mandatory items-center gap-4 overflow-x-auto py-5 pl-[max(1rem,calc(50%-8.75rem))] pr-[max(1rem,calc(50%-8.75rem))] scrollbar-hide sm:-mx-8 sm:min-h-[32rem] sm:gap-5 sm:py-6 md:hidden"
+              className="swipe-x -mx-4 flex min-h-[30rem] cursor-grab snap-x snap-mandatory items-center gap-4 overflow-x-auto py-2 pl-[max(1rem,calc(50%-8.75rem))] pr-[max(1rem,calc(50%-8.75rem))] scrollbar-hide sm:-mx-8 sm:min-h-[32rem] sm:gap-5 sm:py-6 md:hidden"
               initial={reduceMotion ? false : { opacity: 0 }}
               whileInView={reduceMotion ? undefined : { opacity: 1 }}
               viewport={{ once: true, amount: "some", margin: "0px 0px -10% 0px" }}

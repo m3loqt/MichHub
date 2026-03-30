@@ -587,7 +587,7 @@ function ProjectCard({
 
   return (
     <div className="flex w-full min-w-0 flex-col items-stretch overflow-hidden rounded-2xl border border-white/[0.12] bg-[#1A1A1A] min-[500px]:flex-row lg:flex-col">
-      <div className="relative h-[min(12.5rem,42vw)] min-h-[9.5rem] w-full shrink-0 sm:h-[12.5rem] min-[500px]:h-auto min-[500px]:!self-stretch min-[500px]:w-[44%] lg:h-[340px] xl:h-[380px] lg:w-full lg:self-auto">
+      <div className="relative h-[min(12.5rem,42vw)] min-h-[9.5rem] w-full shrink-0 min-[500px]:h-auto min-[500px]:!self-stretch min-[500px]:w-[44%] lg:h-[340px] xl:h-[380px] lg:w-full lg:self-auto">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={imageSrc}
@@ -979,7 +979,7 @@ export default function Page() {
       ═══════════════════════════════════════════════════════════ */}
       <section
         id="home"
-        className="relative flex min-h-[90dvh] sm:min-h-[94dvh] md:min-h-[96dvh] lg:min-h-screen scroll-mt-20 flex-col justify-center overflow-hidden"
+        className="relative flex min-h-[95dvh] sm:min-h-[95dvh] md:min-h-[95dvh] lg:min-h-screen scroll-mt-20 flex-col justify-center overflow-hidden"
       >
         <div
           className="absolute inset-0 z-0 bg-[#0A0A0A]"

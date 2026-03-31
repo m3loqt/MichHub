@@ -987,7 +987,7 @@ export default function Page() {
       ═══════════════════════════════════════════════════════════ */}
       <section
         id="home"
-        className="relative flex min-h-[95dvh] sm:min-h-[95dvh] md:min-h-[95dvh] lg:min-h-screen scroll-mt-20 flex-col justify-center overflow-hidden"
+        className="relative flex min-h-[97dvh] sm:min-h-[97dvh] md:min-h-[97dvh] lg:min-h-screen scroll-mt-20 flex-col justify-center overflow-hidden"
       >
         <div
           className="absolute inset-0 z-0 bg-[#0A0A0A]"

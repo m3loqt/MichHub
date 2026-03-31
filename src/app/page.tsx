@@ -1169,7 +1169,11 @@ export default function Page() {
       {/* ═══════════════════════════════════════════════════════════
           SECTION 2 — BRAND PROOF / BELIEF
       ═══════════════════════════════════════════════════════════ */}
-      <AnimatedSection className="bg-black py-10 sm:py-14 lg:py-20 min-h-0 sm:min-h-[52vh] lg:min-h-[58vh] flex flex-col justify-center overflow-x-hidden">
+      <AnimatedSection
+        initial={false}
+        whileInView={undefined}
+        className="bg-black py-10 sm:py-14 lg:py-20 min-h-0 sm:min-h-[52vh] lg:min-h-[58vh] flex flex-col justify-center overflow-x-hidden"
+      >
         <div className="w-full max-w-[1280px] xl:max-w-[1440px] 2xl:max-w-[1520px] mx-auto px-4 sm:px-8 lg:px-10 xl:px-16">
           <p
             className={cn(

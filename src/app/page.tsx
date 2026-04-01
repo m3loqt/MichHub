@@ -98,7 +98,7 @@ const navItems: { label: string; href: string }[] = [
   { label: "Process", href: "#process" },
   { label: "Projects", href: "#work" },
   { label: "Team", href: "#team" },
-  { label: "Contact", href: "#contact" },
+  { label: "Contact", href: "#contact-form" },
 ];
 
 const clientLogos = [
@@ -723,7 +723,7 @@ export default function Page() {
       const offset = Number.isFinite(scrollMarginTop) ? scrollMarginTop : 0;
       // For the contact page, we want the *full* contact form to be visible
       // (the CTA banner above should not remain peeking at the top).
-      const extraDown = id === "contact-form" ? 120 : id === "work" ? 60 : 0;
+      const extraDown = 60;
       const top = window.scrollY + rect.top - offset + extraDown;
       window.scrollTo({ top, behavior: "smooth" });
     });
@@ -956,7 +956,7 @@ export default function Page() {
               <a
                 key={href}
                 href={href}
-                onClick={() => setMenuOpen(false)}
+                onClick={(e) => { e.preventDefault(); scrollToSection(href.replace("#", "")); }}
                 className="max-w-[min(100%,20rem)] text-center font-display text-[1.35rem] uppercase italic leading-snug text-white transition-colors hover:text-[#F97316] min-[400px]:text-3xl sm:text-4xl"
               >
                 {label}
@@ -1023,7 +1023,7 @@ export default function Page() {
         <nav className="relative z-20 flex items-center justify-between px-5 sm:px-8 pt-5 sm:pt-6 lg:hidden">
           <Link
             href="/"
-            className="relative block h-14 w-[min(360px,82vw)] shrink-0"
+            className="relative block h-14 w-[min(360px,82vw)] shrink-0 -ml-[10px]"
           >
             <Image
               src="/logo.svg"
@@ -1048,7 +1048,7 @@ export default function Page() {
           <div className="flex justify-start items-center min-w-0">
             <Link
               href="/"
-              className="relative block h-[4.5rem] w-[380px] max-w-full shrink-0 xl:h-[5.25rem] xl:w-[460px]"
+              className="relative block h-[4.5rem] w-[380px] max-w-full shrink-0 xl:h-[5.25rem] xl:w-[460px] -ml-[10px]"
             >
               <Image
                 src="/logo.svg"
@@ -1065,6 +1065,7 @@ export default function Page() {
               <a
                 key={href}
                 href={href}
+                onClick={(e) => { e.preventDefault(); scrollToSection(href.replace("#", "")); }}
                 className="text-center text-[10px] font-medium uppercase tracking-[0.12em] text-white/70 transition-colors hover:text-white xl:text-[11px]"
               >
                 {label}

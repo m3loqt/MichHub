@@ -25,13 +25,9 @@ export function PageLoader({ onComplete }: PageLoaderProps) {
   onCompleteRef.current = onComplete;
 
   useEffect(() => {
-    const removePreloader = () =>
-      document.getElementById("preloader")?.remove();
-
-    // Skip loader entirely for reduced-motion users — but still clear preloader
+    // Skip loader entirely for reduced-motion users
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (mq.matches) {
-      removePreloader();
       onCompleteRef.current();
       return;
     }
@@ -40,12 +36,7 @@ export function PageLoader({ onComplete }: PageLoaderProps) {
     setMounted(true);
 
     const t1 = setTimeout(() => setShowLogo(false), 1800);   // logo fades out
-    // Remove CSS preloader the moment the panel starts sliding —
-    // so there's no black flash underneath as the overlay moves away
-    const t2 = setTimeout(() => {
-      removePreloader();
-      setSliding(true);
-    }, 2150);
+    const t2 = setTimeout(() => setSliding(true), 2150);     // panel slides up
     const t3 = setTimeout(() => {
       setMounted(false);
       onCompleteRef.current();

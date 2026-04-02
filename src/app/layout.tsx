@@ -143,9 +143,10 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {/* Zero-JS preloader — covers the page from the first byte of HTML,
-            before any JS bundle loads. PageLoader removes it via DOM API
-            once the animated loader takes over. */}
+        {/* Zero-JS preloader — covers the page from the first byte of HTML.
+            Only active on the homepage (/); removed instantly on all other
+            routes via the inline script below. PageLoader removes it on /
+            once the animated loader begins its slide-up. */}
         <div
           id="preloader"
           style={{
@@ -154,6 +155,11 @@ export default function RootLayout({
             zIndex: 9998,
             background: "#0A0A0A",
             pointerEvents: "none",
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if(location.pathname!=='/'){document.getElementById('preloader')?.remove();}`,
           }}
         />
         {children}

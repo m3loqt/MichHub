@@ -16,6 +16,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import { JumblingMetric } from "@/components/JumblingMetric";
+import { PageLoader } from "@/components/PageLoader";
 import {
   brandEase,
   cardRevealItem,
@@ -703,6 +704,7 @@ function HeroBackgroundVideo() {
 export default function Page() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [loaderDone, setLoaderDone] = useState(false);
   const [portfolioProjects, setPortfolioProjects] = useState(
     defaultPortfolioProjects
   );
@@ -940,6 +942,7 @@ export default function Page() {
 
   return (
     <main className="bg-[#0A0A0A] text-white">
+      <PageLoader onComplete={() => setLoaderDone(true)} />
       {/* ─── Mobile Menu Overlay ─────────────────────────────────── */}
       <AnimatePresence initial={false} mode="wait">
         {menuOpen && (
@@ -1097,8 +1100,8 @@ export default function Page() {
           <motion.div
             className="flex flex-col items-center text-center w-full max-w-[960px] lg:max-w-[1040px] xl:max-w-[1120px] mx-auto"
             initial={reduceMotion ? false : { opacity: 0, y: 26 }}
-            animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.85, ease: brandEase, delay: 0.06 }}
+            animate={reduceMotion ? undefined : (loaderDone ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 })}
+            transition={{ duration: 0.85, ease: brandEase, delay: 0.1 }}
           >
             <h1 className="font-display italic uppercase leading-none mb-5 sm:mb-6 lg:mb-8 [text-shadow:0_2px_32px_rgba(0,0,0,0.85),0_1px_3px_rgba(0,0,0,0.9)]">
               <span className="block text-white text-[38px] sm:text-[52px] md:text-[64px] lg:text-[80px] xl:text-[96px]">
@@ -1148,7 +1151,7 @@ export default function Page() {
             className="grid grid-cols-3 max-w-[1280px] xl:max-w-[1440px] 2xl:max-w-[1520px] mx-auto px-5 sm:px-8 lg:px-10 xl:px-16 py-5 sm:py-6 lg:py-8"
             variants={heroStatsStaggerContainer}
             initial={reduceMotion ? "show" : "hidden"}
-            animate="show"
+            animate={reduceMotion ? "show" : (loaderDone ? "show" : "hidden")}
           >
             {[
               { value: "50+", label: "PROJECTS" },
@@ -1165,7 +1168,7 @@ export default function Page() {
                 <JumblingMetric
                   value={stat.value}
                   scrambleMs={2400}
-                  startAfterMs={Math.round(920 + i * 160)}
+                  startAfterMs={Math.round(2800 + 920 + i * 160)}
                   className="font-display text-white text-[28px] sm:text-[36px] lg:text-[48px] leading-none"
                 />
                 <span className="text-white uppercase text-[10px] sm:text-[11px] tracking-[0.12em] font-sans">

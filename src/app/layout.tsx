@@ -137,9 +137,8 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${anton.variable} ${dmSans.variable} scroll-smooth antialiased`}
-      style={{ background: "#0A0A0A" }}
     >
-      <body suppressHydrationWarning style={{ background: "#0A0A0A" }}>
+      <body suppressHydrationWarning>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

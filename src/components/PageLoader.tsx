@@ -38,7 +38,10 @@ export function PageLoader({ onComplete }: PageLoaderProps) {
     const t1 = setTimeout(() => setShowLogo(false), 1800);   // logo fades out
     const t2 = setTimeout(() => {
       setSliding(true);
-      onCompleteRef.current();   // reveal main EXACTLY as panel starts sliding up
+      // Delay content reveal by one frame so the slide animation starts on
+      // a clean frame before the browser paints the newly-visible main content.
+      // Batching both in the same tick causes a jank stutter on mobile.
+      requestAnimationFrame(() => onCompleteRef.current());
     }, 2150);
     const t3 = setTimeout(() => setMounted(false), 2900);    // unmount after slide completes
 
@@ -54,8 +57,10 @@ export function PageLoader({ onComplete }: PageLoaderProps) {
   return (
     <motion.div
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#0A0A0A]"
+      initial={{ y: "0%" }}
       animate={sliding ? { y: "-100%" } : { y: "0%" }}
-      transition={{ duration: 0.75, ease: [0.76, 0, 0.24, 1] }}
+      transition={{ duration: 0.75, ease: [0.55, 0, 0.1, 1] }}
+      style={{ willChange: "transform" }}
     >
       <AnimatePresence>
         {showLogo && (

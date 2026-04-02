@@ -80,6 +80,8 @@ export function PageLoader({ onComplete }: PageLoaderProps) {
                 src="/logoalt.svg"
                 alt=""
                 aria-hidden="true"
+                loading="eager"
+                fetchPriority="high"
                 style={{
                   display: "block",
                   width: LOGO_W,
@@ -112,6 +114,8 @@ export function PageLoader({ onComplete }: PageLoaderProps) {
                   src="/logoalt.svg"
                   alt=""
                   aria-hidden="true"
+                  loading="eager"
+                  fetchPriority="high"
                   style={{
                     display: "block",
                     position: "absolute",

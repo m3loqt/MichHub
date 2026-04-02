@@ -955,8 +955,13 @@ export default function Page() {
   useCarouselCenterScale(capabilityCardsScrollRef, reduceMotion);
 
   return (
-    <main className="bg-[#0A0A0A] text-white">
+    <>
+      {/* PageLoader lives outside <main> so hiding main doesn't hide the loader */}
       <PageLoader onComplete={() => setLoaderDone(true)} />
+      <main
+        className="bg-[#0A0A0A] text-white"
+        style={{ visibility: loaderDone ? undefined : "hidden" }}
+      >
       {/* ─── Mobile Menu Overlay ─────────────────────────────────── */}
       <AnimatePresence initial={false} mode="wait">
         {menuOpen && (
@@ -2175,6 +2180,7 @@ export default function Page() {
           </p>
         </div>
       </motion.footer>
-    </main>
+      </main>
+    </>
   );
 }

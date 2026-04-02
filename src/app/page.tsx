@@ -14,9 +14,15 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import dynamic from "next/dynamic";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import { JumblingMetric } from "@/components/JumblingMetric";
-import { PageLoader } from "@/components/PageLoader";
+
+// Never SSR the loader — avoids any server/client HTML mismatch
+const PageLoader = dynamic(
+  () => import("@/components/PageLoader").then((m) => ({ default: m.PageLoader })),
+  { ssr: false }
+);
 import {
   brandEase,
   cardRevealItem,

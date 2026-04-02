@@ -123,7 +123,7 @@ function ProjectForm({ initial, onSave, onCancel }: ProjectFormProps) {
             <img
               src={localPreview || form.imageSrc}
               alt="preview"
-              className="mb-2 h-24 w-full rounded-xl object-cover"
+              className="mb-2 h-48 w-full rounded-xl object-cover"
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = "none";
               }}

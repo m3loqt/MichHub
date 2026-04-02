@@ -23,12 +23,12 @@
       "stat1Label": "campaigns",
       "stat2Value": "FULL",
       "stat2Label": "CGI Pipeline",
-      "active": true,
+      "active": false,
       "order": 1
     },
     {
       "id": "project-1775150609938-h8k0q",
-      "active": false,
+      "active": true,
       "order": 2,
       "clientLabel": "Selecta",
       "title": "BEAT THE INIT SELECTA",

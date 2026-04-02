@@ -1,0 +1,30 @@
+{
+  "projects": [
+    {
+      "id": "selecta-1",
+      "clientLabel": "SELECTA x CUTS STUDIO",
+      "title": "THREE FLAVOR UNIVERSES. FULL CGI. BROADCAST-READY.",
+      "description": "Cinema-quality CGI montages for three hero flavors — Crunchy Choco Malt, Avocado Dream, and New York Cheesecake. Full pipeline from Houdini simulations to Blender rendering to After Effects compositing. Delivered on a tight broadcast deadline.",
+      "imageSrc": "/videos/work1.png",
+      "stat1Value": "3",
+      "stat1Label": "campaigns",
+      "stat2Value": "FULL",
+      "stat2Label": "CGI Pipeline",
+      "active": true,
+      "order": 0
+    },
+    {
+      "id": "selecta-2",
+      "clientLabel": "SELECTA x CUTS STUDIO",
+      "title": "THREE FLAVOR UNIVERSES. FULL CGI. BROADCAST-READY.",
+      "description": "Cinema-quality CGI montages for three hero flavors — Crunchy Choco Malt, Avocado Dream, and New York Cheesecake. Full pipeline from Houdini simulations to Blender rendering to After Effects compositing. Delivered on a tight broadcast deadline.",
+      "imageSrc": "/videos/work2.png",
+      "stat1Value": "3",
+      "stat1Label": "campaigns",
+      "stat2Value": "FULL",
+      "stat2Label": "CGI Pipeline",
+      "active": true,
+      "order": 1
+    }
+  ]
+}

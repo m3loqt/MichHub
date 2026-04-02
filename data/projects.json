@@ -23,7 +23,7 @@
       "stat1Label": "campaigns",
       "stat2Value": "FULL",
       "stat2Label": "CGI Pipeline",
-      "active": false,
+      "active": true,
       "order": 1
     },
     {

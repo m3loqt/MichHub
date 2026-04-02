@@ -36,11 +36,11 @@ export function PageLoader({ onComplete }: PageLoaderProps) {
     setMounted(true);
 
     const t1 = setTimeout(() => setShowLogo(false), 1800);   // logo fades out
-    const t2 = setTimeout(() => setSliding(true), 2150);     // panel slides up
-    const t3 = setTimeout(() => {
-      setMounted(false);
-      onCompleteRef.current();
-    }, 2900);                                                 // unmount
+    const t2 = setTimeout(() => {
+      setSliding(true);
+      onCompleteRef.current();   // reveal main EXACTLY as panel starts sliding up
+    }, 2150);
+    const t3 = setTimeout(() => setMounted(false), 2900);    // unmount after slide completes
 
     return () => {
       clearTimeout(t1);

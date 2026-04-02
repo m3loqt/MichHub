@@ -437,7 +437,7 @@ const processSteps = [
   },
 ];
 
-const portfolioProjects = [
+const defaultPortfolioProjects = [
   {
     clientLabel: "SELECTA x CUTS STUDIO",
     title: "THREE FLAVOR UNIVERSES. FULL CGI. BROADCAST-READY.",
@@ -703,6 +703,9 @@ function HeroBackgroundVideo() {
 export default function Page() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [portfolioProjects, setPortfolioProjects] = useState(
+    defaultPortfolioProjects
+  );
   const problemCardsScrollRef = useRef<HTMLDivElement>(null);
   const capabilityCardsScrollRef = useRef<HTMLDivElement>(null);
 
@@ -728,6 +731,13 @@ export default function Page() {
       window.scrollTo({ top, behavior: "smooth" });
     });
   };
+
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { if (Array.isArray(data) && data.length > 0) setPortfolioProjects(data); })
+      .catch(() => { /* keep default data on error */ });
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");

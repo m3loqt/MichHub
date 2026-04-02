@@ -525,27 +525,6 @@ const SECTION_ORANGE_FLOW_GRADIENT =
 
 const CONTACT_EMAIL = "admin@michhub.com";
 
-function submitContactMailto(e: FormEvent<HTMLFormElement>) {
-  e.preventDefault();
-  const fd = new FormData(e.currentTarget);
-  const name = String(fd.get("name") ?? "").trim();
-  const email = String(fd.get("email") ?? "").trim();
-  const message = String(fd.get("message") ?? "").trim();
-  const subject = encodeURIComponent(
-    name ? `Website inquiry from ${name}` : "Website inquiry",
-  );
-  const body = encodeURIComponent(
-    [
-      name && `Name: ${name}`,
-      email && `Email: ${email}`,
-      "",
-      message || "(No message provided.)",
-    ]
-      .filter(Boolean)
-      .join("\n"),
-  );
-  window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
-}
 
 // ─── Components ───────────────────────────────────────────────────────────────
 
@@ -711,6 +690,35 @@ export default function Page() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [loaderDone, setLoaderDone] = useState(false);
+  const [contactStatus, setContactStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [contactError, setContactError] = useState("");
+
+  async function handleContactSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setContactStatus("sending");
+    setContactError("");
+    try {
+      const res = await fetch(process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT!, {
+        method: "POST",
+        body: new FormData(e.currentTarget),
+        headers: { Accept: "application/json" },
+      });
+      if (res.ok) {
+        setContactStatus("success");
+        (e.target as HTMLFormElement).reset();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setContactError(
+          (data?.errors as { message?: string }[] | undefined)?.[0]?.message ??
+            "Something went wrong. Please try again."
+        );
+        setContactStatus("error");
+      }
+    } catch {
+      setContactError("Network error. Please check your connection and try again.");
+      setContactStatus("error");
+    }
+  }
   const [portfolioProjects, setPortfolioProjects] = useState(
     defaultPortfolioProjects
   );
@@ -1856,70 +1864,111 @@ export default function Page() {
           </motion.div>
 
           <motion.div variants={fadeUpItem} className="w-full">
-            <form
-              onSubmit={submitContactMailto}
-              className="flex w-full flex-col gap-5"
-            >
-              <div>
-                <label
-                  htmlFor="contact-name"
-                  className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.14em] text-white/70"
+            {contactStatus === "success" ? (
+              <div className="flex flex-col items-center gap-3 rounded-[16px] border border-[#F97316]/25 bg-[#F97316]/[0.08] px-6 py-10 text-center">
+                <svg className="h-10 w-10 text-[#F97316]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6} aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <p className="text-[17px] font-semibold text-white">Message sent!</p>
+                <p className="max-w-[22rem] text-[14px] leading-relaxed text-white/55">
+                  Thanks for reaching out. We read every message and usually reply within one business day.
+                </p>
+                <button
+                  onClick={() => setContactStatus("idle")}
+                  className="mt-2 text-[12px] font-semibold uppercase tracking-widest text-[#F97316] hover:text-[#fb923c]"
                 >
-                  Name
-                </label>
-                <input
-                  id="contact-name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  required
-                  className="w-full rounded-[12px] border border-white/[0.14] bg-white/[0.06] px-4 py-3 text-[15px] text-white placeholder:text-white/35 focus:border-[#F97316] focus:outline-none focus:ring-1 focus:ring-[#F97316]"
-                  placeholder="Your name"
-                />
+                  Send another message
+                </button>
               </div>
-              <div>
-                <label
-                  htmlFor="contact-email"
-                  className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.14em] text-white/70"
-                >
-                  Email
-                </label>
-                <input
-                  id="contact-email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="w-full rounded-[12px] border border-white/[0.14] bg-white/[0.06] px-4 py-3 text-[15px] text-white placeholder:text-white/35 focus:border-[#F97316] focus:outline-none focus:ring-1 focus:ring-[#F97316]"
-                  placeholder="you@company.com"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="contact-message"
-                  className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.14em] text-white/70"
-                >
-                  Message
-                </label>
-                <textarea
-                  id="contact-message"
-                  name="message"
-                  required
-                  rows={5}
-                  className="min-h-[8rem] w-full resize-y rounded-[12px] border border-white/[0.14] bg-white/[0.06] px-4 py-3 text-[15px] text-white placeholder:text-white/35 focus:border-[#F97316] focus:outline-none focus:ring-1 focus:ring-[#F97316]"
-                  placeholder="Tell us about your project…"
-                />
-              </div>
-              <div className="flex w-full justify-end">
-                <Button
-                  type="submit"
-                  className="flex h-11 w-1/3 min-w-[5.5rem] items-center justify-center gap-2 rounded-[12px] border-transparent bg-[#F97316] text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:h-12 sm:text-sm"
-                >
-                  <Send className="h-4 w-4" />
-                  Send
-                </Button>
-              </div>
-            </form>
+            ) : (
+              <form
+                onSubmit={handleContactSubmit}
+                className="flex w-full flex-col gap-5"
+              >
+                <div>
+                  <label
+                    htmlFor="contact-name"
+                    className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.14em] text-white/70"
+                  >
+                    Name
+                  </label>
+                  <input
+                    id="contact-name"
+                    name="name"
+                    type="text"
+                    autoComplete="name"
+                    required
+                    disabled={contactStatus === "sending"}
+                    className="w-full rounded-[12px] border border-white/[0.14] bg-white/[0.06] px-4 py-3 text-[15px] text-white placeholder:text-white/35 focus:border-[#F97316] focus:outline-none focus:ring-1 focus:ring-[#F97316] disabled:opacity-50"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="contact-email"
+                    className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.14em] text-white/70"
+                  >
+                    Email
+                  </label>
+                  <input
+                    id="contact-email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    disabled={contactStatus === "sending"}
+                    className="w-full rounded-[12px] border border-white/[0.14] bg-white/[0.06] px-4 py-3 text-[15px] text-white placeholder:text-white/35 focus:border-[#F97316] focus:outline-none focus:ring-1 focus:ring-[#F97316] disabled:opacity-50"
+                    placeholder="you@company.com"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="contact-message"
+                    className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.14em] text-white/70"
+                  >
+                    Message
+                  </label>
+                  <textarea
+                    id="contact-message"
+                    name="message"
+                    required
+                    rows={5}
+                    disabled={contactStatus === "sending"}
+                    className="min-h-[8rem] w-full resize-y rounded-[12px] border border-white/[0.14] bg-white/[0.06] px-4 py-3 text-[15px] text-white placeholder:text-white/35 focus:border-[#F97316] focus:outline-none focus:ring-1 focus:ring-[#F97316] disabled:opacity-50"
+                    placeholder="Tell us about your project…"
+                  />
+                </div>
+
+                {contactStatus === "error" && (
+                  <p className="rounded-[10px] bg-red-500/10 px-4 py-3 text-[13px] text-red-400">
+                    {contactError}
+                  </p>
+                )}
+
+                <div className="flex w-full justify-end">
+                  <Button
+                    type="submit"
+                    disabled={contactStatus === "sending"}
+                    className="flex h-11 w-1/3 min-w-[5.5rem] items-center justify-center gap-2 rounded-[12px] border-transparent bg-[#F97316] text-xs font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] disabled:cursor-not-allowed disabled:opacity-70 sm:h-12 sm:text-sm"
+                  >
+                    {contactStatus === "sending" ? (
+                      <>
+                        <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden>
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                        </svg>
+                        Sending…
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-4 w-4" />
+                        Send
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </form>
+            )}
           </motion.div>
 
           <motion.div

@@ -536,13 +536,7 @@ export default function AdminPage() {
       </header>
 
       <main className="mx-auto max-w-5xl px-6 py-10">
-        {/* Info banner */}
-        <div className="mb-8 rounded-xl border border-white/10 bg-white/3 px-5 py-4 text-sm text-white/50">
-          <strong className="text-white/80">How it works:</strong> Mark exactly
-          2 projects as <span className="text-[#F97316]">Live</span> — those are
-          the ones visitors see on the site. Changes commit to GitHub and go live
-          in ~1 minute.
-        </div>
+        
 
         {/* Live Projects */}
         <section className="mb-10">

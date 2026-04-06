@@ -38,6 +38,19 @@
       "stat1Label": "Campaigns",
       "stat2Value": "Full",
       "stat2Label": "CGI Pipeline"
+    },
+    {
+      "id": "project-1775454596302-lzzp7",
+      "active": false,
+      "order": 3,
+      "clientLabel": "OPPO",
+      "title": "OPPO FIND N2 BILLBOARD",
+      "description": "Just a sample description",
+      "imageSrc": "/uploads/1775454592826-project9.png",
+      "stat1Value": "3",
+      "stat1Label": "Campaigns",
+      "stat2Value": "FULL ",
+      "stat2Label": "CGI Pipeline"
     }
   ]
 }

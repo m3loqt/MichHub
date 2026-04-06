@@ -8,6 +8,7 @@ import {
   type ChangeEvent,
   type FormEvent,
 } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 interface Project {
@@ -52,6 +53,8 @@ function ProjectForm({ initial, onSave, onCancel }: ProjectFormProps) {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [localPreview, setLocalPreview] = useState("");
+  // Pending file is held locally — GitHub commit only happens on Save
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function set(field: keyof Project) {
@@ -59,39 +62,42 @@ function ProjectForm({ initial, onSave, onCancel }: ProjectFormProps) {
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
   }
 
-  async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+  function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setUploadError("");
-    setUploading(true);
-
-    // Show local preview immediately — no need to wait for GitHub
+    // Show a local blob preview immediately — no GitHub push yet
     const objectUrl = URL.createObjectURL(file);
     setLocalPreview(objectUrl);
-
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-
-      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error ?? "Upload failed");
-
-      setForm((prev) => ({ ...prev, imageSrc: data.path }));
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Upload failed");
-      setLocalPreview("");
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
+    setPendingFile(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    onSave(form);
+    let imageSrc = form.imageSrc;
+
+    // Only push to GitHub when the user actually hits Save
+    if (pendingFile) {
+      setUploading(true);
+      setUploadError("");
+      try {
+        const fd = new FormData();
+        fd.append("file", pendingFile);
+        const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error ?? "Upload failed");
+        imageSrc = data.path;
+      } catch (err) {
+        setUploadError(err instanceof Error ? err.message : "Upload failed");
+        setUploading(false);
+        return; // abort save — don't call onSave with a broken path
+      } finally {
+        setUploading(false);
+      }
+    }
+
+    onSave({ ...form, imageSrc });
   }
 
   const inputCls =
@@ -132,27 +138,13 @@ function ProjectForm({ initial, onSave, onCancel }: ProjectFormProps) {
 
           {/* Drop zone / file picker */}
           <label
-            className={`flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed px-4 py-3 text-center text-xs transition ${
-              uploading
-                ? "border-white/20 text-white/30"
-                : "border-white/20 text-white/40 hover:border-[#F97316]/50 hover:text-[#F97316]"
-            }`}
+            className="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-white/20 px-4 py-3 text-center text-xs text-white/40 transition hover:border-[#F97316]/50 hover:text-[#F97316]"
           >
-            {uploading ? (
-              <span className="flex items-center gap-2">
-                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                </svg>
-                Uploading…
-              </span>
-            ) : (
-              <>
-                <span className="text-base leading-none">↑</span>
-                <span>{form.imageSrc ? "Replace image" : "Upload image"}</span>
-                <span className="text-white/25">PNG, JPG, WEBP — max 5 MB</span>
-              </>
-            )}
+            <>
+              <span className="text-base leading-none">↑</span>
+              <span>{pendingFile ? pendingFile.name : (form.imageSrc ? "Replace image" : "Upload image")}</span>
+              <span className="text-white/25">PNG, JPG, WEBP — max 5 MB · saved on publish</span>
+            </>
             <input
               ref={fileInputRef}
               type="file"
@@ -248,7 +240,7 @@ function ProjectForm({ initial, onSave, onCancel }: ProjectFormProps) {
           disabled={uploading}
           className="rounded-xl bg-[#F97316] px-5 py-2.5 text-sm font-bold uppercase tracking-wider text-white transition hover:bg-[#ea6c0a] disabled:opacity-50"
         >
-          Save Project
+          {uploading ? "Uploading…" : "Save Project"}
         </button>
       </div>
     </form>
@@ -288,7 +280,7 @@ function AdminCard({
         <img
           src={project.imageSrc}
           alt={project.title}
-          className="mb-3 h-28 w-full rounded-xl object-cover"
+          className="mb-3 h-48 w-full rounded-xl object-cover"
           onError={(e) => {
             (e.target as HTMLImageElement).style.display = "none";
           }}
@@ -482,15 +474,18 @@ export default function AdminPage() {
       )}
 
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0A0A0A]/80 backdrop-blur-sm">
+      <header className="top-0 z-40 border-b border-white/10 bg-[#0A0A0A]/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <div>
-            <p className="font-display text-lg font-bold uppercase italic tracking-widest text-white">
-              MICHHUB
-            </p>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-[#F97316]">
-              CMS — Proof of Impact
-            </p>
+          <div className="flex flex-col items-start">
+            <div className="relative h-30 w-[180px] -ml-[6px]">
+              <Image
+                src="/logo.svg"
+                alt="MichHub"
+                fill
+                className="object-contain object-left"
+                priority
+              />
+            </div>
           </div>
           <div className="flex items-center gap-4">
             {saving && (

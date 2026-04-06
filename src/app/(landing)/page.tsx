@@ -102,9 +102,7 @@ const menuSocialLinks: {
 const navItems: { label: string; href: string }[] = [
   { label: "Home", href: "#home" },
   { label: "Services", href: "#services" },
-  { label: "Process", href: "#process" },
-  { label: "Projects", href: "#work" },
-  { label: "Team", href: "#team" },
+  { label: "Portfolio", href: "/portfolio" },
   { label: "Contact", href: "#contact-form" },
 ];
 
@@ -985,14 +983,25 @@ export default function Page() {
             aria-label="Primary"
           >
             {navItems.map(({ label, href }) => (
-              <a
-                key={href}
-                href={href}
-                onClick={(e) => { e.preventDefault(); scrollToSection(href.replace("#", "")); }}
-                className="max-w-[min(100%,20rem)] text-center font-display text-[1.35rem] uppercase italic leading-snug text-white transition-colors hover:text-[#F97316] min-[400px]:text-3xl sm:text-4xl"
-              >
-                {label}
-              </a>
+              href.startsWith("/") && !href.startsWith("/#") ? (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setMenuOpen(false)}
+                  className="max-w-[min(100%,20rem)] text-center font-display text-[1.35rem] uppercase italic leading-snug text-white transition-colors hover:text-[#F97316] min-[400px]:text-3xl sm:text-4xl"
+                >
+                  {label}
+                </Link>
+              ) : (
+                <a
+                  key={href}
+                  href={href}
+                  onClick={(e) => { e.preventDefault(); scrollToSection(href.replace("#", "")); }}
+                  className="max-w-[min(100%,20rem)] text-center font-display text-[1.35rem] uppercase italic leading-snug text-white transition-colors hover:text-[#F97316] min-[400px]:text-3xl sm:text-4xl"
+                >
+                  {label}
+                </a>
+              )
             ))}
           </nav>
           <div className="shrink-0 border-t border-white/[0.08] px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-5">
@@ -1094,14 +1103,24 @@ export default function Page() {
           </div>
           <div className="flex max-w-[56rem] flex-wrap items-center justify-center gap-x-4 gap-y-2 xl:max-w-[68rem] xl:gap-x-5">
             {navItems.map(({ label, href }) => (
-              <a
-                key={href}
-                href={href}
-                onClick={(e) => { e.preventDefault(); scrollToSection(href.replace("#", "")); }}
-                className="text-center text-[10px] font-medium uppercase tracking-[0.12em] text-white/70 transition-colors hover:text-white xl:text-[11px]"
-              >
-                {label}
-              </a>
+              href.startsWith("/") && !href.startsWith("/#") ? (
+                <Link
+                  key={href}
+                  href={href}
+                  className="text-center text-[10px] font-medium uppercase tracking-[0.12em] text-white/70 transition-colors hover:text-white xl:text-[11px]"
+                >
+                  {label}
+                </Link>
+              ) : (
+                <a
+                  key={href}
+                  href={href}
+                  onClick={(e) => { e.preventDefault(); scrollToSection(href.replace("#", "")); }}
+                  className="text-center text-[10px] font-medium uppercase tracking-[0.12em] text-white/70 transition-colors hover:text-white xl:text-[11px]"
+                >
+                  {label}
+                </a>
+              )
             ))}
           </div>
           <div className="flex justify-end items-center min-w-0">

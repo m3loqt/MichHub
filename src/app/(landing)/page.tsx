@@ -2157,11 +2157,11 @@ export default function Page() {
 
         {/* ── Desktop layout ────────────────────────────────── */}
         <div className="hidden lg:block max-w-[1280px] xl:max-w-[1440px] 2xl:max-w-[1520px] mx-auto">
-          {/* 3-col grid — logo | quick links (auto) | contact (wider) */}
-          <div className="grid grid-cols-[1fr_auto_1.6fr] xl:grid-cols-[1fr_auto_1.8fr] gap-x-6 xl:gap-x-8 mb-10">
-            {/* Col 1: Logo + tagline */}
-            <div className="flex flex-col items-start">
-              <div className="mb-4 flex flex-col items-start">
+          {/* Logo left, Quick Links + Contact right */}
+          <div className="flex items-start mb-10">
+            {/* Logo + tagline */}
+            <div className="flex flex-1 flex-col items-start">
+              <div className="mb-4">
                 <Link
                   href="/"
                   className="relative block h-[4.5rem] w-[380px] max-w-full shrink-0 xl:h-[5.25rem] xl:w-[440px] -ml-[10px]"
@@ -2180,43 +2180,46 @@ export default function Page() {
               </p>
             </div>
 
-            {/* Col 2: Quick Links */}
-            <div className="flex flex-col items-start text-left">
-              <p className="text-white text-[20px] font-sans font-semibold mb-4">
-                Quick Links
-              </p>
-              <nav className="flex flex-col items-start">
-                {navItems.map(({ label, href }) => (
-                  <a
-                    key={href}
-                    href={href}
-                    className="text-white text-[15px] leading-[2.4] hover:underline"
-                  >
-                    {label}
-                  </a>
-                ))}
-              </nav>
-            </div>
+            {/* Quick Links + Contact aligned to the right */}
+            <div className="flex items-start gap-16 xl:gap-24">
+              {/* Quick Links */}
+              <div className="flex flex-col items-start text-left">
+                <p className="text-white text-[20px] font-sans font-semibold mb-4">
+                  Quick Links
+                </p>
+                <nav className="flex flex-col items-start">
+                  {navItems.map(({ label, href }) => (
+                    <a
+                      key={href}
+                      href={href}
+                      className="text-white text-[15px] leading-[2.4] hover:underline"
+                    >
+                      {label}
+                    </a>
+                  ))}
+                </nav>
+              </div>
 
-            {/* Col 3: Contact */}
-            <div className="flex flex-col items-start text-left">
-              <p className="mb-5 font-sans text-[20px] font-semibold text-white">
-                Contact
-              </p>
-              <div className="flex flex-col items-start gap-4">
-                <div className="flex items-center justify-start gap-3">
-                  <Phone className="h-[18px] w-[18px] shrink-0 text-white" />
-                  <span className="text-[14px] text-white">09184773330</span>
-                </div>
-                <div className="flex items-center justify-start gap-3">
-                  <Mail className="h-[18px] w-[18px] shrink-0 text-white" />
-                  <span className="text-[14px] text-white">admin@michhub.com</span>
-                </div>
-                <div className="flex flex-row items-start gap-2">
-                  <MapPin className="mt-0.5 h-[18px] w-[18px] shrink-0 text-white" />
-                  <span className="text-[14px] leading-snug text-white">
-                    Eastwood Global Place, Libis, Quezon City, Philippines
-                  </span>
+              {/* Contact */}
+              <div className="flex flex-col items-start text-left">
+                <p className="mb-5 font-sans text-[20px] font-semibold text-white">
+                  Contact
+                </p>
+                <div className="flex flex-col items-start gap-4">
+                  <div className="flex items-center justify-start gap-3">
+                    <Phone className="h-[18px] w-[18px] shrink-0 text-white" />
+                    <span className="text-[14px] text-white">09184773330</span>
+                  </div>
+                  <div className="flex items-center justify-start gap-3">
+                    <Mail className="h-[18px] w-[18px] shrink-0 text-white" />
+                    <span className="text-[14px] text-white">admin@michhub.com</span>
+                  </div>
+                  <div className="flex flex-row items-start gap-2">
+                    <MapPin className="mt-0.5 h-[18px] w-[18px] shrink-0 text-white" />
+                    <span className="text-[14px] leading-snug text-white">
+                      Eastwood Global Place, Libis, Quezon City, Philippines
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

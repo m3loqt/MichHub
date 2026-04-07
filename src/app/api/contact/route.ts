@@ -2,12 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { checkRateLimit } from "@/lib/rate-limit";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const TO_EMAIL = "angelomelcortes06@gmail.com";
 const FROM_EMAIL = "MichHub Studios <noreply@michhub.com>";
 
 export async function POST(request: NextRequest) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
   // Rate limit: 5 submissions per IP per 10 minutes
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   const { allowed } = checkRateLimit(ip, 5, 10 * 60 * 1000);

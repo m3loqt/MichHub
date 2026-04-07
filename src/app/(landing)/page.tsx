@@ -2079,14 +2079,14 @@ export default function Page() {
           <div className="mb-4 flex flex-col items-center">
             <Link
               href="/"
-              className="relative mx-auto block h-[4.5rem] w-[min(100%,220px)] shrink-0 sm:h-20 sm:w-[240px]"
+              className="relative block h-[5rem] w-[min(100%,300px)] shrink-0 sm:h-[5.5rem] sm:w-[340px]"
             >
               <Image
                 src="/logoalt.svg"
                 alt="MichHub"
                 fill
                 className="object-contain object-center"
-                sizes="240px"
+                sizes="340px"
               />
             </Link>
           </div>
@@ -2101,19 +2101,19 @@ export default function Page() {
             Quick Links
           </p>
           <nav className="flex flex-col mb-8">
-            {footerLinks.map((link) => (
+            {navItems.map(({ label, href }) => (
               <a
-                key={link}
-                href={`#${link.toLowerCase()}`}
+                key={href}
+                href={href}
                 className="text-white text-[16px] leading-[2.5] hover:underline"
               >
-                {link}
+                {label}
               </a>
             ))}
           </nav>
           <div className="w-full border-t border-white/20 mb-8" />
 
-          {/* Contact — row 1: phone + email centered; row 2: address centered */}
+          {/* Contact */}
           <p className="text-white text-[20px] font-sans font-semibold mb-5">
             Contact
           </p>
@@ -2135,14 +2135,14 @@ export default function Page() {
             <div className="mx-auto flex w-full flex-row items-start justify-center gap-2.5 sm:max-w-[34rem] md:max-w-[36rem]">
               <MapPin className="mt-0.5 h-[18px] w-[18px] shrink-0 text-white" />
               <span className="min-w-0 text-[14px] leading-snug text-white text-left">
-              Eastwood Global Place, Libis, Quezon City, Philippines
+                Eastwood Global Place, Libis, Quezon City, Philippines
               </span>
             </div>
           </div>
 
-          {/* Social icons */}
+          {/* Social icons — Facebook & Instagram only */}
           <div className="flex items-center gap-6 mb-8">
-            {[FacebookIcon, LinkedinIcon, TwitterIcon, InstagramIcon].map((Icon, i) => (
+            {[FacebookIcon, InstagramIcon].map((Icon, i) => (
               <a key={i} href="#" aria-label="Social link" className="text-white hover:text-white/70 transition-colors">
                 <Icon className="h-6 w-6" />
               </a>
@@ -2157,27 +2157,26 @@ export default function Page() {
 
         {/* ── Desktop layout ────────────────────────────────── */}
         <div className="hidden lg:block max-w-[1280px] xl:max-w-[1440px] 2xl:max-w-[1520px] mx-auto">
-          {/* 3-col grid */}
-          <div className="grid grid-cols-3 gap-8 mb-10">
+          {/* 3-col grid — logo | quick links (auto) | contact (wider) */}
+          <div className="grid grid-cols-[1fr_auto_1.6fr] xl:grid-cols-[1fr_auto_1.8fr] gap-x-6 xl:gap-x-8 mb-10">
             {/* Col 1: Logo + tagline */}
             <div className="flex flex-col items-start">
               <div className="mb-4 flex flex-col items-start">
                 <Link
                   href="/"
-                  className="relative block h-[5rem] w-[200px] shrink-0 xl:h-[5.5rem] xl:w-[230px]"
+                  className="relative block h-[4.5rem] w-[380px] max-w-full shrink-0 xl:h-[5.25rem] xl:w-[440px] -ml-[10px]"
                 >
                   <Image
                     src="/logoalt.svg"
                     alt="MichHub"
                     fill
                     className="object-contain object-left"
-                    sizes="(min-width: 1280px) 230px, 200px"
+                    sizes="(min-width: 1280px) 440px, 380px"
                   />
                 </Link>
               </div>
               <p className="text-white/85 text-[12px] leading-relaxed max-w-[220px] xl:max-w-[280px]">
-                NDA-ready · Proposals in 48hrs · Enterprise billing · 30-day
-                support
+                NDA-ready · Proposals in 48hrs · Enterprise billing · 30-day support
               </p>
             </div>
 
@@ -2187,13 +2186,13 @@ export default function Page() {
                 Quick Links
               </p>
               <nav className="flex flex-col items-start">
-                {footerLinks.map((link) => (
+                {navItems.map(({ label, href }) => (
                   <a
-                    key={link}
-                    href={`#${link.toLowerCase()}`}
+                    key={href}
+                    href={href}
                     className="text-white text-[15px] leading-[2.4] hover:underline"
                   >
-                    {link}
+                    {label}
                   </a>
                 ))}
               </nav>
@@ -2213,10 +2212,10 @@ export default function Page() {
                   <Mail className="h-[18px] w-[18px] shrink-0 text-white" />
                   <span className="text-[14px] text-white">admin@michhub.com</span>
                 </div>
-                <div className="flex max-w-[16rem] flex-row items-start gap-2 xl:max-w-[20rem]">
+                <div className="flex flex-row items-start gap-2">
                   <MapPin className="mt-0.5 h-[18px] w-[18px] shrink-0 text-white" />
                   <span className="text-[14px] leading-snug text-white">
-                  Eastwood Global Place, Libis, Quezon City, Philippines
+                    Eastwood Global Place, Libis, Quezon City, Philippines
                   </span>
                 </div>
               </div>
@@ -2226,9 +2225,9 @@ export default function Page() {
           {/* Divider */}
           <div className="border-t border-white/20 mb-6" />
 
-          {/* Social icons */}
+          {/* Social icons — Facebook & Instagram only */}
           <div className="flex items-center justify-center gap-6 mb-5">
-            {[FacebookIcon, LinkedinIcon, TwitterIcon, InstagramIcon].map((Icon, i) => (
+            {[FacebookIcon, InstagramIcon].map((Icon, i) => (
               <a key={i} href="#" aria-label="Social link" className="text-white hover:text-white/70 transition-colors">
                 <Icon className="h-6 w-6" />
               </a>

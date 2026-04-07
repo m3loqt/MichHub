@@ -631,7 +631,7 @@ function RoleCard({
   );
 }
 
-const HERO_REEL_SRC = "/videos/heroreelnew.mp4";
+const HERO_REEL_SRC = "/videos/heroreel.mp4";
 
 /** Defers mounting the reel until idle time so text/LCP can paint first; skips when save-data or reduced motion. */
 function HeroBackgroundVideo() {

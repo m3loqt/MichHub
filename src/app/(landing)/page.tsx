@@ -2164,7 +2164,7 @@ export default function Page() {
               <div className="mb-4">
                 <Link
                   href="/"
-                  className="relative block h-[4.5rem] w-[380px] max-w-full shrink-0 xl:h-[5.25rem] xl:w-[440px] -ml-[10px]"
+                  className="relative block h-[6rem] w-[460px] max-w-full shrink-0 xl:h-[7rem] xl:w-[540px] -ml-[10px]"
                 >
                   <Image
                     src="/logoalt.svg"
@@ -2181,7 +2181,7 @@ export default function Page() {
             </div>
 
             {/* Quick Links + Contact aligned to the right */}
-            <div className="flex items-start gap-16 xl:gap-24">
+            <div className="flex items-start gap-24 xl:gap-36">
               {/* Quick Links */}
               <div className="flex flex-col items-start text-left">
                 <p className="text-white text-[20px] font-sans font-semibold mb-4">

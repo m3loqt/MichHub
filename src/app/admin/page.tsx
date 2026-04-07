@@ -237,10 +237,8 @@ interface Project {
   title: string;
   description: string;
   imageSrc: string;
-  stat1Value: string;
-  stat1Label: string;
-  stat2Value: string;
-  stat2Label: string;
+  releaseDate: string;
+  url?: string;
   active: boolean;
   order: number;
 }
@@ -250,10 +248,8 @@ const EMPTY_PROJECT: Omit<Project, "id" | "active" | "order"> = {
   title: "",
   description: "",
   imageSrc: "",
-  stat1Value: "",
-  stat1Label: "",
-  stat2Value: "",
-  stat2Label: "",
+  releaseDate: "",
+  url: "",
 };
 
 function generateId() {
@@ -404,47 +400,26 @@ function ProjectForm({ initial, onSave, onCancel }: ProjectFormProps) {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className={labelCls}>Stat 1 — Value</label>
-          <input
-            className={inputCls}
-            value={form.stat1Value}
-            onChange={set("stat1Value")}
-            placeholder="3"
-            required
-          />
-        </div>
-        <div>
-          <label className={labelCls}>Stat 1 — Label</label>
-          <input
-            className={inputCls}
-            value={form.stat1Label}
-            onChange={set("stat1Label")}
-            placeholder="campaigns"
-            required
-          />
-        </div>
-        <div>
-          <label className={labelCls}>Stat 2 — Value</label>
-          <input
-            className={inputCls}
-            value={form.stat2Value}
-            onChange={set("stat2Value")}
-            placeholder="FULL"
-            required
-          />
-        </div>
-        <div>
-          <label className={labelCls}>Stat 2 — Label</label>
-          <input
-            className={inputCls}
-            value={form.stat2Label}
-            onChange={set("stat2Label")}
-            placeholder="CGI Pipeline"
-            required
-          />
-        </div>
+      <div>
+        <label className={labelCls}>Date of Release</label>
+        <input
+          className={inputCls}
+          value={form.releaseDate}
+          onChange={set("releaseDate")}
+          placeholder="March 2024"
+          required
+        />
+      </div>
+
+      <div>
+        <label className={labelCls}>Project URL <span className="normal-case text-white/30">(optional — opens on card click)</span></label>
+        <input
+          className={inputCls}
+          type="url"
+          value={form.url ?? ""}
+          onChange={set("url")}
+          placeholder="https://..."
+        />
       </div>
 
       <div className="flex justify-end gap-3 pt-2">
@@ -484,7 +459,7 @@ function AdminCard({
   onToggleActive,
   onDelete,
 }: AdminCardProps) {
-  const canActivate = project.active || activeCount < 2;
+  const canActivate = project.active || activeCount < 4;
 
   return (
     <div
@@ -525,15 +500,9 @@ function AdminCard({
         {project.description}
       </p>
 
-      <div className="mb-4 flex gap-3 text-xs text-white/60">
-        <span>
-          <strong className="text-[#F97316]">{project.stat1Value}</strong>{" "}
-          {project.stat1Label}
-        </span>
-        <span>
-          <strong className="text-[#F97316]">{project.stat2Value}</strong>{" "}
-          {project.stat2Label}
-        </span>
+      <div className="mb-4 text-xs text-white/60">
+        <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/40">Date of Release</span>
+        <p className="mt-0.5 font-bold text-[#F97316]">{project.releaseDate}</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -552,7 +521,7 @@ function AdminCard({
               : "border border-green-500/40 text-green-400 hover:bg-green-500/10"
           }`}
           title={
-            !canActivate ? "Deactivate another project first" : undefined
+            !canActivate ? "Deactivate another project first (max 4 live)" : undefined
           }
         >
           {project.active ? "Deactivate" : "Set Live"}
@@ -909,13 +878,13 @@ export default function AdminPage() {
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-sm font-bold uppercase tracking-widest text-white/80">
               Live on Site{" "}
-              <span className="text-[#F97316]">({liveProjects.length}/2)</span>
+              <span className="text-[#F97316]">({liveProjects.length}/4)</span>
             </h2>
           </div>
 
           {liveProjects.length === 0 ? (
             <p className="rounded-xl border border-dashed border-white/10 p-6 text-center text-sm text-white/30">
-              No active projects. Set 2 projects as Live below.
+              No active projects. Set up to 4 projects as Live below.
             </p>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2">

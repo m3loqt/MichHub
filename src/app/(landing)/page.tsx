@@ -135,16 +135,19 @@ const problemCards = [
     num: "01",
     title: "VISUALS THAT DON'T CONVERT",
     body: "Significant budgets allocated to campaigns that look competent but fail to stand out. The content gets published, performs below benchmark, and leaves no lasting brand impression in the market. The issue isn't the strategy, it's the execution quality.",
+    image: "/problem/problem1.jpg",
   },
   {
     num: "02",
     title: "VENDORS WHO DON'T UNDERSTAND BRANDS",
     body: "The production brief is clear. The final output is template-level work — generic motion graphics, stock-style compositions, and off-brand colour choices that undermine the identity you spent years building. You paid for custom. You got commodity.",
+    image: "/problem/problem2.jpg",
   },
   {
     num: "03",
     title: "NO CREATIVE CONTINUITY",
     body: "Every campaign feels like it came from a different studio. Inconsistent visual language, shifting aesthetics, and a lack of brand coherence across touchpoints erodes trust and dilutes the equity you've built. Great brands demand a consistent visual standard.",
+    image: "/problem/problem3.jpg",
   },
 ];
 
@@ -280,8 +283,8 @@ function IndustryProblemCard({
       )}
       style={{
         backgroundImage: [
-          "linear-gradient(to top, rgba(6,6,6,0.9) 0%, rgba(6,6,6,0.72) 22%, rgba(6,6,6,0.38) 48%, rgba(6,6,6,0.12) 72%, rgba(6,6,6,0) 100%)",
-          "url('/cta.png')",
+          "linear-gradient(to top, rgba(6,6,6,1) 0%, rgba(6,6,6,0.97) 18%, rgba(6,6,6,0.88) 35%, rgba(6,6,6,0.6) 55%, rgba(6,6,6,0.2) 75%, rgba(6,6,6,0) 100%)",
+          `url('${card.image}')`,
         ].join(", "),
         backgroundSize: "cover, cover",
         backgroundPosition: "center, center",
@@ -449,10 +452,7 @@ const defaultPortfolioProjects = [
     description:
       "Cinema-quality CGI montages for three hero flavors — Crunchy Choco Malt, Avocado Dream, and New York Cheesecake. Full pipeline from Houdini simulations to Blender rendering to After Effects compositing. Delivered on a tight broadcast deadline.",
     imageSrc: "/videos/work1.png",
-    stat1Value: "3",
-    stat1Label: "campaigns",
-    stat2Value: "FULL",
-    stat2Label: "CGI Pipeline",
+    releaseDate: "March 2024",
   },
   {
     clientLabel: "SELECTA x CUTS STUDIO",
@@ -460,10 +460,23 @@ const defaultPortfolioProjects = [
     description:
       "Cinema-quality CGI montages for three hero flavors — Crunchy Choco Malt, Avocado Dream, and New York Cheesecake. Full pipeline from Houdini simulations to Blender rendering to After Effects compositing. Delivered on a tight broadcast deadline.",
     imageSrc: "/videos/work2.png",
-    stat1Value: "3",
-    stat1Label: "campaigns",
-    stat2Value: "FULL",
-    stat2Label: "CGI Pipeline",
+    releaseDate: "June 2024",
+  },
+  {
+    clientLabel: "BARE BLISS",
+    title: "SENSORY BRAND FILM. ONE-DAY SHOOT. SIGNATURE PALETTE.",
+    description:
+      "A full-length brand narrative captured in a single production day. Product hero shots, lifestyle sequences, and ambient B-roll — all graded to a warm signature palette that now defines the brand's entire visual identity across every platform.",
+    imageSrc: "/videos/work3.png",
+    releaseDate: "September 2024",
+  },
+  {
+    clientLabel: "STUDIO PROJECT",
+    title: "MOTION IDENTITY SYSTEM. END-TO-END.",
+    description:
+      "Full motion identity package — logo animations, lower thirds, transition templates, and social media cutdowns. A single coherent visual language deployed across every touchpoint, from broadcast to reels.",
+    imageSrc: "/videos/work4.png",
+    releaseDate: "November 2024",
   },
 ];
 
@@ -531,10 +544,8 @@ interface ProjectCardProps {
   title: string;
   description: string;
   imageSrc: string;
-  stat1Value: string;
-  stat1Label: string;
-  stat2Value: string;
-  stat2Label: string;
+  releaseDate: string;
+  url?: string;
 }
 
 function ProjectCard({
@@ -542,34 +553,28 @@ function ProjectCard({
   title,
   description,
   imageSrc,
-  stat1Value,
-  stat1Label,
-  stat2Value,
-  stat2Label,
+  releaseDate,
+  url,
 }: ProjectCardProps) {
-  const statBlocks = (
-    <>
-      <div className="min-w-0 text-center lg:text-left">
-        <p className="font-bold leading-none text-[#F97316] text-[18px] sm:text-[20px] lg:text-[26px] xl:text-[30px]">
-          {stat1Value}
-        </p>
-        <p className="mt-1 break-words text-[11px] leading-snug text-[#9CA3AF] sm:text-[12px] lg:text-[13px] xl:text-[14px]">
-          {stat1Label}
-        </p>
-      </div>
-      <div className="min-w-0 text-center lg:text-left">
-        <p className="font-bold leading-none text-[#F97316] text-[18px] sm:text-[20px] lg:text-[26px] xl:text-[30px]">
-          {stat2Value}
-        </p>
-        <p className="mt-1 break-words text-[11px] leading-snug text-[#9CA3AF] sm:text-[12px] lg:text-[13px] xl:text-[14px]">
-          {stat2Label}
-        </p>
-      </div>
-    </>
+  const [hovered, setHovered] = useState(false);
+  const hasLink = !!url;
+
+  const dateBlock = (
+    <div className="min-w-0 text-right lg:text-left">
+      <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#9CA3AF] sm:text-[10px]">
+        Date of Release
+      </p>
+      <p className="mt-1 font-bold leading-snug text-[#F97316] text-[13px] sm:text-[14px] lg:text-[16px]">
+        {releaseDate}
+      </p>
+    </div>
   );
 
-  return (
-    <div className="flex w-full min-w-0 flex-col items-stretch overflow-hidden rounded-2xl border border-white/40 bg-[#1A1A1A] min-[500px]:flex-row lg:flex-col">
+  const card = (
+    <div className="flex w-full min-w-0 flex-col items-stretch overflow-hidden rounded-2xl border border-white/40 bg-[#1A1A1A] transition-colors duration-500 min-[500px]:flex-row lg:flex-col"
+      style={{ borderColor: hovered && hasLink ? "rgba(249,115,22,0.6)" : undefined }}
+    >
+      {/* Image with hover overlays */}
       <div className="relative h-[min(12.5rem,42vw)] min-h-[9.5rem] w-full shrink-0 min-[500px]:h-auto min-[500px]:!self-stretch min-[500px]:w-[44%] lg:h-[340px] xl:h-[380px] lg:w-full lg:self-auto">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -577,32 +582,59 @@ function ProjectCard({
           alt={title}
           className="absolute inset-0 h-full w-full object-cover"
         />
+        {/* Base dark overlay */}
+        <div className="absolute inset-0 bg-black/30" />
+        {/* Hover darkening */}
+        <div
+          className={`absolute inset-0 bg-black/30 transition-opacity duration-500 ${hovered ? "opacity-100" : "opacity-0"}`}
+        />
+        {/* VIEW PROJECT button */}
+        {hasLink && (
+          <div
+            className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 ${hovered ? "opacity-100" : "opacity-0"}`}
+          >
+            <span className="flex h-10 items-center justify-center rounded-[12px] border border-white bg-transparent px-5 text-sm font-bold uppercase tracking-wider text-white transition-colors duration-300 hover:border-[#F97316] hover:bg-[#F97316] sm:px-8">
+              VIEW PROJECT
+            </span>
+          </div>
+        )}
       </div>
+
+      {/* Text content */}
       <div className="flex min-h-0 min-w-0 flex-1 flex-col p-3.5 min-[400px]:p-4 sm:p-5 lg:flex-row lg:items-stretch lg:gap-6 lg:p-6">
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <p className="mb-2 break-words text-[10px] font-bold uppercase tracking-normal text-[#F97316] min-[400px]:text-[11px]">
-            CLIENT: {clientLabel}
-          </p>
+          <div className="mb-2 flex items-start justify-between gap-2">
+            <p className="break-words text-[10px] font-bold uppercase tracking-normal text-[#F97316] min-[400px]:text-[11px]">
+              CLIENT: {clientLabel}
+            </p>
+            <div className="shrink-0 lg:hidden">{dateBlock}</div>
+          </div>
           <h3 className="mb-2 font-display text-[14px] uppercase leading-snug text-white min-[400px]:text-[15px] sm:text-[18px] lg:mb-3 lg:text-[22px]">
             {title}
           </h3>
           <p className="mb-auto line-clamp-6 text-[12px] leading-[1.4] text-white/85 min-[400px]:text-[13px] min-[500px]:line-clamp-5 lg:mb-0 lg:line-clamp-none lg:flex-1 lg:text-[14px]">
             {description}
           </p>
-
-          <div className="lg:hidden">
-            <div className="my-2.5 border-t border-[#F97316]/50 sm:my-3" />
-            <div className="grid min-w-0 grid-cols-2 gap-2 sm:gap-3">{statBlocks}</div>
-          </div>
         </div>
 
         <div className="mt-4 hidden shrink-0 flex-row items-stretch gap-5 self-stretch lg:mt-0 lg:flex">
           <div className="w-px shrink-0 self-stretch bg-[#F97316]/50" aria-hidden />
-          <div className="flex min-w-[5.5rem] flex-col justify-center gap-5 sm:min-w-[6.5rem] lg:min-w-[7.75rem] lg:gap-6 xl:min-w-[8.5rem]">
-            {statBlocks}
+          <div className="flex min-w-[6rem] flex-col justify-center lg:min-w-[7rem] xl:min-w-[8rem]">
+            {dateBlock}
           </div>
         </div>
       </div>
+    </div>
+  );
+
+  return (
+    <div
+      className={hasLink ? "cursor-pointer" : undefined}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={() => { if (url) window.open(url, "_blank", "noopener,noreferrer"); }}
+    >
+      {card}
     </div>
   );
 }
@@ -1176,7 +1208,7 @@ export default function Page() {
                 INQUIRE ABOUT OUR SERVICES
               </Button>
               <Button
-                onClick={() => scrollToSection("work")}
+                onClick={() => { window.location.href = "/portfolio"; }}
                 className="flex h-10 w-full items-center justify-center gap-2 rounded-[12px] border border-white bg-transparent px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/10 sm:h-12 sm:w-auto sm:px-8 sm:text-sm"
               >
                 <Play className="h-4 w-4 fill-white text-white" />
@@ -1394,7 +1426,10 @@ export default function Page() {
             >
               TALK TO US ABOUT YOUR BRAND
             </Button>
-            <Button className="flex h-10 w-full items-center justify-center gap-2 rounded-[12px] border border-white bg-transparent px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/10 sm:h-12 sm:w-auto sm:px-8 sm:text-sm">
+            <Button
+              onClick={() => { window.location.href = "/portfolio"; }}
+              className="flex h-10 w-full items-center justify-center gap-2 rounded-[12px] border border-white bg-transparent px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/10 sm:h-12 sm:w-auto sm:px-8 sm:text-sm"
+            >
               <HelpCircle className="h-4 w-4" />
               SEE HOW WE SOLVE THIS
             </Button>
@@ -1483,7 +1518,10 @@ export default function Page() {
             >
               REQUEST A CUSTOM QUOTE
             </Button>
-            <Button className="flex h-10 w-full items-center justify-center gap-2 rounded-[12px] border border-white bg-transparent px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/10 sm:h-12 sm:w-auto sm:px-8 sm:text-sm">
+            <Button
+              onClick={() => { window.location.href = "/portfolio"; }}
+              className="flex h-10 w-full items-center justify-center gap-2 rounded-[12px] border border-white bg-transparent px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/10 sm:h-12 sm:w-auto sm:px-8 sm:text-sm"
+            >
               <Images className="h-4 w-4" />
               VIEW OUR PORTFOLIO
             </Button>
@@ -1601,7 +1639,7 @@ export default function Page() {
               GET RESULTS LIKE THIS
             </Button>
             <Button
-              onClick={() => scrollToSection("work")}
+              onClick={() => { window.location.href = "/portfolio"; }}
               className="flex h-10 w-full items-center justify-center gap-2 rounded-[12px] border border-white bg-transparent px-5 text-xs font-bold uppercase tracking-wider text-white hover:bg-white/10 sm:h-12 sm:w-auto sm:px-8 sm:text-sm"
             >
               <Play className="h-4 w-4 fill-white text-white" />
@@ -2083,7 +2121,7 @@ export default function Page() {
               <div className="flex items-center gap-2">
                 <Phone className="h-[18px] w-[18px] shrink-0 text-white" />
                 <span className="whitespace-nowrap text-[14px] text-white">
-                  +1 (555) 123-4567
+                  09184773330
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -2096,7 +2134,7 @@ export default function Page() {
             <div className="mx-auto flex w-full flex-row items-start justify-center gap-2.5 sm:max-w-[34rem] md:max-w-[36rem]">
               <MapPin className="mt-0.5 h-[18px] w-[18px] shrink-0 text-white" />
               <span className="min-w-0 text-[14px] leading-snug text-white text-left">
-                123 Cloud Avenue, Tech City, CA 94088, USA
+              Eastwood Global Place, Libis, Quezon City, Philippines
               </span>
             </div>
           </div>
@@ -2168,7 +2206,7 @@ export default function Page() {
               <div className="flex flex-col items-start gap-4">
                 <div className="flex items-center justify-start gap-3">
                   <Phone className="h-[18px] w-[18px] shrink-0 text-white" />
-                  <span className="text-[14px] text-white">+1 (555) 123-4567</span>
+                  <span className="text-[14px] text-white">09184773330</span>
                 </div>
                 <div className="flex items-center justify-start gap-3">
                   <Mail className="h-[18px] w-[18px] shrink-0 text-white" />
@@ -2177,7 +2215,7 @@ export default function Page() {
                 <div className="flex max-w-[16rem] flex-row items-start gap-2 xl:max-w-[20rem]">
                   <MapPin className="mt-0.5 h-[18px] w-[18px] shrink-0 text-white" />
                   <span className="text-[14px] leading-snug text-white">
-                    123 Cloud Avenue, Tech City, CA 94088, USA
+                  Eastwood Global Place, Libis, Quezon City, Philippines
                   </span>
                 </div>
               </div>

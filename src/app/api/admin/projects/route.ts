@@ -54,9 +54,9 @@ export async function POST(request: NextRequest) {
 
     // Enforce: at most 2 active projects
     const activeCount = projects.filter((p) => p.active).length;
-    if (activeCount > 2) {
+    if (activeCount > 4) {
       return NextResponse.json(
-        { error: "Only 2 projects can be active at a time" },
+        { error: "Only 4 projects can be active at a time" },
         { status: 400 }
       );
     }

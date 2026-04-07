@@ -363,7 +363,7 @@ export default function PortfolioPage() {
             <div className="flex flex-row flex-wrap items-center justify-center gap-x-5 gap-y-2 sm:gap-x-8">
               <div className="flex items-center gap-2">
                 <Phone className="h-[18px] w-[18px] shrink-0 text-white" />
-                <span className="whitespace-nowrap text-[14px] text-white">+1 (555) 123-4567</span>
+                <span className="whitespace-nowrap text-[14px] text-white">09184773330</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-[18px] w-[18px] shrink-0 text-white" />
@@ -373,7 +373,7 @@ export default function PortfolioPage() {
             <div className="mx-auto flex w-full flex-row items-start justify-center gap-2.5 sm:max-w-[34rem] md:max-w-[36rem]">
               <MapPin className="mt-0.5 h-[18px] w-[18px] shrink-0 text-white" />
               <span className="min-w-0 text-[14px] leading-snug text-white text-left">
-                123 Cloud Avenue, Tech City, CA 94088, USA
+              Eastwood Global Place, Libis, Quezon City, Philippines
               </span>
             </div>
           </div>
@@ -434,7 +434,7 @@ export default function PortfolioPage() {
               <div className="flex flex-col items-start gap-4">
                 <div className="flex items-center justify-start gap-3">
                   <Phone className="h-[18px] w-[18px] shrink-0 text-white" />
-                  <span className="text-[14px] text-white">+1 (555) 123-4567</span>
+                  <span className="text-[14px] text-white">09184773330</span>
                 </div>
                 <div className="flex items-center justify-start gap-3">
                   <Mail className="h-[18px] w-[18px] shrink-0 text-white" />
@@ -443,7 +443,7 @@ export default function PortfolioPage() {
                 <div className="flex max-w-[16rem] flex-row items-start gap-2 xl:max-w-[20rem]">
                   <MapPin className="mt-0.5 h-[18px] w-[18px] shrink-0 text-white" />
                   <span className="text-[14px] leading-snug text-white">
-                    123 Cloud Avenue, Tech City, CA 94088, USA
+                  Eastwood Global Place, Libis, Quezon City, Philippines
                   </span>
                 </div>
               </div>

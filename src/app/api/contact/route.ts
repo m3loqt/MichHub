@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
                 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;border:1px solid #e5e7eb;overflow:hidden;">
                   <tr>
                     <td style="padding:36px 40px 28px;">
-                      <img src="https://michhub.com/logo-black.svg" alt="MichHub Studios" height="26" style="display:block;height:26px;">
+                      <img src="https://michhub.com/logo-black.svg" alt="MichHub Studios" height="42" style="display:block;height:42px;">
                     </td>
                   </tr>
                   <tr>

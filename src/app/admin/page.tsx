@@ -640,7 +640,7 @@ export default function AdminPage() {
     const target = projects.find((p) => p.id === id);
     if (!target) return;
 
-    if (!target.active && activeCount >= 2) return; // guard
+    if (!target.active && activeCount >= 4) return; // guard
 
     const next = projects.map((p) =>
       p.id === id ? { ...p, active: !p.active } : p

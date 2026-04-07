@@ -2175,7 +2175,7 @@ export default function Page() {
                   />
                 </Link>
               </div>
-              <p className="text-white/85 text-[12px] leading-relaxed max-w-[220px] xl:max-w-[280px]">
+              <p className="text-white/85 text-[12px] leading-relaxed max-w-[380px] xl:max-w-[440px]">
                 NDA-ready · Proposals in 48hrs · Enterprise billing · 30-day support
               </p>
             </div>

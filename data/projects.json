@@ -51,6 +51,17 @@
       "stat1Label": "Campaigns",
       "stat2Value": "FULL ",
       "stat2Label": "CGI Pipeline"
+    },
+    {
+      "id": "project-1775591555822-vl32w",
+      "active": false,
+      "order": 4,
+      "clientLabel": "PENSHOPPE",
+      "title": "Seoul (Penshoppe Crew Bear 3)",
+      "description": "An aspirational lifestyle campaign featuring Penshoppe's iconic Crew Bear exploring the vibrant streets of Seoul. We brought the character to life by handling the full CGI creation of the Crew Bear, seamlessly integrating our digital character work with real-world environments to craft a compelling, travel-focused narrative that proves every journey is worth dressing for.",
+      "imageSrc": "/uploads/1775591552157-penshoppe.png",
+      "releaseDate": "March 2025",
+      "url": "https://www.instagram.com/reels/DOYOxB-iS2C/"
     }
   ]
 }

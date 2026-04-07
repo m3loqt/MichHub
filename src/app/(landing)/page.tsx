@@ -757,6 +757,7 @@ export default function Page() {
   );
   const problemCardsScrollRef = useRef<HTMLDivElement>(null);
   const capabilityCardsScrollRef = useRef<HTMLDivElement>(null);
+  const inquireBtnRef = useRef<HTMLDivElement>(null);
 
   useHorizontalDragScroll(problemCardsScrollRef);
   useHorizontalDragScroll(capabilityCardsScrollRef);
@@ -775,8 +776,7 @@ export default function Page() {
       const computed = window.getComputedStyle(el);
       const scrollMarginTop = Number.parseFloat(computed.scrollMarginTop || "0");
       const offset = Number.isFinite(scrollMarginTop) ? scrollMarginTop : 0;
-      const inquireBtn = document.getElementById("inquire-now-btn");
-      const extraDown = inquireBtn ? inquireBtn.getBoundingClientRect().bottom : 60;
+      const extraDown = inquireBtnRef.current ? inquireBtnRef.current.getBoundingClientRect().bottom : 60;
       const top = window.scrollY + rect.top - offset + extraDown;
       window.scrollTo({ top, behavior: "smooth" });
     });
@@ -1159,7 +1159,7 @@ export default function Page() {
               )
             ))}
           </div>
-          <div id="inquire-now-btn" className="flex justify-end items-center min-w-0">
+          <div ref={inquireBtnRef} className="flex justify-end items-center min-w-0">
             <Button
               onClick={() => scrollToSection("contact-form")}
               className="flex h-10 shrink-0 items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-sm font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:px-8"

@@ -11,6 +11,226 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
+// ─── Portfolio types ───────────────────────────────────────────────────────────
+
+interface PortfolioItem {
+  id: string;
+  title: string;
+  tags: string;
+  imageSrc: string;
+  url?: string;
+  order: number;
+}
+
+const EMPTY_PORTFOLIO_ITEM: Omit<PortfolioItem, "id" | "order"> = {
+  title: "",
+  tags: "",
+  imageSrc: "",
+  url: "",
+};
+
+function generatePortfolioId() {
+  return `portfolio-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+// ─── Portfolio Form ────────────────────────────────────────────────────────────
+
+interface PortfolioFormProps {
+  initial: PortfolioItem;
+  onSave: (item: PortfolioItem) => void;
+  onCancel: () => void;
+}
+
+function PortfolioForm({ initial, onSave, onCancel }: PortfolioFormProps) {
+  const [form, setForm] = useState<PortfolioItem>(initial);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const [localPreview, setLocalPreview] = useState("");
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function set(field: keyof PortfolioItem) {
+    return (e: ChangeEvent<HTMLInputElement>) =>
+      setForm((prev) => ({ ...prev, [field]: e.target.value }));
+  }
+
+  function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadError("");
+    setLocalPreview(URL.createObjectURL(file));
+    setPendingFile(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    let imageSrc = form.imageSrc;
+
+    if (pendingFile) {
+      setUploading(true);
+      setUploadError("");
+      try {
+        const fd = new FormData();
+        fd.append("file", pendingFile);
+        const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error ?? "Upload failed");
+        imageSrc = data.path;
+      } catch (err) {
+        setUploadError(err instanceof Error ? err.message : "Upload failed");
+        setUploading(false);
+        return;
+      } finally {
+        setUploading(false);
+      }
+    }
+
+    onSave({ ...form, imageSrc });
+  }
+
+  const inputCls =
+    "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/30 outline-none transition focus:border-[#F97316] focus:ring-1 focus:ring-[#F97316]";
+  const labelCls =
+    "mb-1 block text-xs font-semibold uppercase tracking-widest text-white/50";
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label className={labelCls}>Title</label>
+          <input
+            className={inputCls}
+            value={form.title}
+            onChange={set("title")}
+            placeholder="PROJECT TITLE IN ALL CAPS"
+            required
+          />
+        </div>
+
+        {/* Image upload */}
+        <div>
+          <label className={labelCls}>Image</label>
+          {(localPreview || form.imageSrc) && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={localPreview || form.imageSrc}
+              alt="preview"
+              className="mb-2 h-36 w-full rounded-xl object-cover"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+            />
+          )}
+          <label className="flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-white/20 px-4 py-3 text-center text-xs text-white/40 transition hover:border-[#F97316]/50 hover:text-[#F97316]">
+            <>
+              <span className="text-base leading-none">↑</span>
+              <span>{pendingFile ? pendingFile.name : (form.imageSrc ? "Replace image" : "Upload image")}</span>
+              <span className="text-white/25">PNG, JPG, WEBP — max 5 MB · saved on publish</span>
+            </>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              disabled={uploading}
+              onChange={handleFileChange}
+            />
+          </label>
+          {uploadError && <p className="mt-1.5 text-xs text-red-400">{uploadError}</p>}
+        </div>
+      </div>
+
+      <div>
+        <label className={labelCls}>Tags</label>
+        <input
+          className={inputCls}
+          value={form.tags}
+          onChange={set("tags")}
+          placeholder="3D CGI PRODUCTION / VFX / COMPOSITING"
+          required
+        />
+      </div>
+
+      <div>
+        <label className={labelCls}>URL (optional)</label>
+        <input
+          className={inputCls}
+          value={form.url ?? ""}
+          onChange={set("url")}
+          placeholder="https://youtube.com/watch?v=..."
+          type="url"
+        />
+      </div>
+
+      <div className="flex justify-end gap-3 pt-2">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded-xl border border-white/20 px-5 py-2.5 text-sm font-semibold text-white/70 transition hover:bg-white/10"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={uploading}
+          className="rounded-xl bg-[#F97316] px-5 py-2.5 text-sm font-bold uppercase tracking-wider text-white transition hover:bg-[#ea6c0a] disabled:opacity-50"
+        >
+          {uploading ? "Uploading…" : "Save Item"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+// ─── Portfolio Admin Card ──────────────────────────────────────────────────────
+
+interface PortfolioAdminCardProps {
+  item: PortfolioItem;
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
+function PortfolioAdminCard({ item, onEdit, onDelete }: PortfolioAdminCardProps) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/3 p-5 transition">
+      {item.imageSrc && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={item.imageSrc}
+          alt={item.title}
+          className="mb-3 h-36 w-full rounded-xl object-cover"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+        />
+      )}
+      <p className="mb-1 text-sm font-bold leading-snug text-white line-clamp-2">{item.title}</p>
+      <p className="mb-1 text-[11px] text-white/40 uppercase tracking-widest">{item.tags}</p>
+      {item.url && (
+        <a
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mb-3 block truncate text-[11px] text-[#F97316]/70 hover:text-[#F97316]"
+        >
+          {item.url}
+        </a>
+      )}
+      <div className="mt-3 flex gap-2">
+        <button
+          onClick={onEdit}
+          className="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white/70 transition hover:bg-white/10"
+        >
+          Edit
+        </button>
+        <button
+          onClick={onDelete}
+          className="ml-auto rounded-lg border border-red-500/20 px-3 py-1.5 text-xs font-semibold text-red-400/70 transition hover:bg-red-500/10"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+}
+
 interface Project {
   id: string;
   clientLabel: string;
@@ -352,6 +572,9 @@ function AdminCard({
 
 export default function AdminPage() {
   const router = useRouter();
+  const [tab, setTab] = useState<"projects" | "portfolio">("projects");
+
+  // ── Projects state ──
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -362,6 +585,14 @@ export default function AdminPage() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+
+  // ── Portfolio state ──
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [portfolioLoading, setPortfolioLoading] = useState(false);
+  const [portfolioSaving, setPortfolioSaving] = useState(false);
+  const [editingPortfolioItem, setEditingPortfolioItem] = useState<PortfolioItem | null>(null);
+  const [showAddPortfolioForm, setShowAddPortfolioForm] = useState(false);
+  const [deletePortfolioConfirm, setDeletePortfolioConfirm] = useState<string | null>(null);
 
   const showToast = useCallback(
     (msg: string, type: "success" | "error" = "success") => {
@@ -383,6 +614,21 @@ export default function AdminPage() {
       .catch((err) => showToast(err.message ?? "Failed to load projects", "error"))
       .finally(() => setLoading(false));
   }, [showToast]);
+
+  // Load portfolio items when tab switches to portfolio
+  useEffect(() => {
+    if (tab !== "portfolio" || portfolioItems.length > 0) return;
+    setPortfolioLoading(true);
+    fetch("/api/admin/portfolio")
+      .then(async (r) => {
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error ?? "Failed to load portfolio");
+        if (!Array.isArray(data)) throw new Error("Unexpected response format");
+        setPortfolioItems(data);
+      })
+      .catch((err) => showToast(err.message ?? "Failed to load portfolio", "error"))
+      .finally(() => setPortfolioLoading(false));
+  }, [tab, portfolioItems.length, showToast]);
 
   const activeCount = projects.filter((p) => p.active).length;
 
@@ -439,6 +685,50 @@ export default function AdminPage() {
     setDeleteConfirm(null);
   }
 
+  // ── Portfolio handlers ──
+
+  async function saveAllPortfolio(updated: PortfolioItem[]) {
+    setPortfolioSaving(true);
+    try {
+      const res = await fetch("/api/admin/portfolio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: updated }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Save failed");
+      setPortfolioItems(updated);
+      showToast("Saved! Changes will be live in ~1 minute.");
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Save failed", "error");
+    } finally {
+      setPortfolioSaving(false);
+    }
+  }
+
+  function handleEditPortfolioItem(updated: PortfolioItem) {
+    const next = portfolioItems.map((item) => (item.id === updated.id ? updated : item));
+    saveAllPortfolio(next);
+    setEditingPortfolioItem(null);
+  }
+
+  function handleAddPortfolioItem(item: PortfolioItem) {
+    const next = [
+      ...portfolioItems,
+      { ...item, id: generatePortfolioId(), order: portfolioItems.length },
+    ];
+    saveAllPortfolio(next);
+    setShowAddPortfolioForm(false);
+  }
+
+  function handleDeletePortfolioItem(id: string) {
+    const next = portfolioItems
+      .filter((item) => item.id !== id)
+      .map((item, i) => ({ ...item, order: i }));
+    saveAllPortfolio(next);
+    setDeletePortfolioConfirm(null);
+  }
+
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
@@ -488,7 +778,7 @@ export default function AdminPage() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            {saving && (
+            {(saving || portfolioSaving) && (
               <span className="flex items-center gap-1.5 text-xs text-white/40">
                 <svg
                   className="h-3.5 w-3.5 animate-spin"
@@ -531,7 +821,88 @@ export default function AdminPage() {
       </header>
 
       <main className="mx-auto max-w-5xl px-6 py-10">
-        
+
+        {/* Tab switcher */}
+        <div className="mb-8 flex gap-1 rounded-xl border border-white/10 bg-white/5 p-1 w-fit">
+          <button
+            onClick={() => setTab("projects")}
+            className={`rounded-lg px-5 py-2 text-xs font-bold uppercase tracking-widest transition ${
+              tab === "projects"
+                ? "bg-[#F97316] text-white"
+                : "text-white/50 hover:text-white"
+            }`}
+          >
+            Featured Projects
+          </button>
+          <button
+            onClick={() => setTab("portfolio")}
+            className={`rounded-lg px-5 py-2 text-xs font-bold uppercase tracking-widest transition ${
+              tab === "portfolio"
+                ? "bg-[#F97316] text-white"
+                : "text-white/50 hover:text-white"
+            }`}
+          >
+            Portfolio
+          </button>
+        </div>
+
+        {/* ── Portfolio Tab ── */}
+        {tab === "portfolio" && (
+          <>
+            {portfolioLoading ? (
+              <p className="py-12 text-center text-sm text-white/40">Loading…</p>
+            ) : (
+              <>
+                {portfolioItems.length > 0 && (
+                  <section className="mb-8">
+                    <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-white/80">
+                      Portfolio Items{" "}
+                      <span className="text-[#F97316]">({portfolioItems.length})</span>
+                    </h2>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      {portfolioItems
+                        .slice()
+                        .sort((a, b) => a.order - b.order)
+                        .map((item) => (
+                          <PortfolioAdminCard
+                            key={item.id}
+                            item={item}
+                            onEdit={() => setEditingPortfolioItem(item)}
+                            onDelete={() => setDeletePortfolioConfirm(item.id)}
+                          />
+                        ))}
+                    </div>
+                  </section>
+                )}
+
+                <section>
+                  {showAddPortfolioForm ? (
+                    <div className="rounded-2xl border border-white/10 bg-white/3 p-6">
+                      <h2 className="mb-5 text-sm font-bold uppercase tracking-widest text-white/80">
+                        Add Portfolio Item
+                      </h2>
+                      <PortfolioForm
+                        initial={{ id: "", order: portfolioItems.length, ...EMPTY_PORTFOLIO_ITEM }}
+                        onSave={handleAddPortfolioItem}
+                        onCancel={() => setShowAddPortfolioForm(false)}
+                      />
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setShowAddPortfolioForm(true)}
+                      className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-white/20 py-5 text-sm font-semibold text-white/40 transition hover:border-[#F97316]/40 hover:text-[#F97316]"
+                    >
+                      <span className="text-lg leading-none">+</span> Add Portfolio Item
+                    </button>
+                  )}
+                </section>
+              </>
+            )}
+          </>
+        )}
+
+        {/* ── Projects Tab ── */}
+        {tab === "projects" && <>
 
         {/* Live Projects */}
         <section className="mb-10">
@@ -611,6 +982,8 @@ export default function AdminPage() {
             </button>
           )}
         </section>
+
+        </>}
       </main>
 
       {/* Edit Modal */}
@@ -648,6 +1021,46 @@ export default function AdminPage() {
               </button>
               <button
                 onClick={() => handleDelete(deleteConfirm)}
+                className="rounded-xl bg-red-500 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-red-600"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Portfolio Edit Modal */}
+      {editingPortfolioItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-2xl rounded-2xl border border-white/10 bg-[#111] p-6 shadow-2xl">
+            <h2 className="mb-5 text-sm font-bold uppercase tracking-widest text-white/80">
+              Edit Portfolio Item
+            </h2>
+            <PortfolioForm
+              initial={editingPortfolioItem}
+              onSave={handleEditPortfolioItem}
+              onCancel={() => setEditingPortfolioItem(null)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Portfolio Delete Confirm Modal */}
+      {deletePortfolioConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#111] p-6 text-center shadow-2xl">
+            <p className="mb-2 text-base font-bold text-white">Delete this portfolio item?</p>
+            <p className="mb-6 text-sm text-white/50">This cannot be undone.</p>
+            <div className="flex justify-center gap-3">
+              <button
+                onClick={() => setDeletePortfolioConfirm(null)}
+                className="rounded-xl border border-white/20 px-5 py-2.5 text-sm font-semibold text-white/70 transition hover:bg-white/10"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeletePortfolioItem(deletePortfolioConfirm)}
                 className="rounded-xl bg-red-500 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-red-600"
               >
                 Delete

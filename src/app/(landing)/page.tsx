@@ -631,7 +631,7 @@ function RoleCard({
   );
 }
 
-const HERO_REEL_SRC = "/videos/heroreel.mp4";
+const HERO_REEL_SRC = "/videos/heroreelnew.mp4";
 
 /** Defers mounting the reel until idle time so text/LCP can paint first; skips when save-data or reduced motion. */
 function HeroBackgroundVideo() {
@@ -695,21 +695,24 @@ export default function Page() {
     e.preventDefault();
     setContactStatus("sending");
     setContactError("");
+    const form = e.currentTarget;
+    const data = new FormData(form);
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT!, {
+      const res = await fetch("/api/contact", {
         method: "POST",
-        body: new FormData(e.currentTarget),
-        headers: { Accept: "application/json" },
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.get("name"),
+          email: data.get("email"),
+          message: data.get("message"),
+        }),
       });
+      const json = await res.json().catch(() => ({}));
       if (res.ok) {
         setContactStatus("success");
-        (e.target as HTMLFormElement).reset();
+        form.reset();
       } else {
-        const data = await res.json().catch(() => ({}));
-        setContactError(
-          (data?.errors as { message?: string }[] | undefined)?.[0]?.message ??
-            "Something went wrong. Please try again."
-        );
+        setContactError(json?.error ?? "Something went wrong. Please try again.");
         setContactStatus("error");
       }
     } catch {

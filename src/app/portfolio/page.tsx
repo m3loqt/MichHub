@@ -7,6 +7,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X, Phone, Mail, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { brandEase, staggerContainer, cardRevealItem } from "@/lib/motion-presets";
+import dynamic from "next/dynamic";
+
+const PageLoader = dynamic(
+  () => import("@/components/PageLoader").then((m) => ({ default: m.PageLoader })),
+  { ssr: false }
+);
 
 // ─── Social Icons ─────────────────────────────────────────────────────────────
 function FacebookIcon({ className }: { className?: string }) {
@@ -65,92 +71,28 @@ const footerLinks = ["Home", "Services", "Process", "Work", "About", "FAQs"];
 interface PortfolioItem {
   id: string;
   title: string;
-  category: string;
+  tags: string;
   imageSrc: string;
-  link?: string;
+  url?: string;
+  order: number;
 }
-
-const portfolioItems: PortfolioItem[] = [
-  {
-    id: "cherry-on-top",
-    title: "CHERRY ON TOP SINGAPORE 3D BILLBOARD",
-    category: "3D CGI PRODUCTION",
-    imageSrc: "/projects/project2.png",
-  },
-  {
-    id: "nekocee-marian",
-    title: "NEKOCEE BY KATH MELENDEZ WITH MARIAN RIVERA DANTES",
-    category: "VFX / COMPOSITING",
-    imageSrc: "/projects/project1.png",
-  },
-  {
-    id: "vaseline-gambit",
-    title: "VASELINE GAMBIT X MICH",
-    category: "VFX / COMPOSITING",
-    imageSrc: "/projects/project3.png",
-  },
-  {
-    id: "diatabs-advance",
-    title: "DIATABS ADVANCE",
-    category: "3D CGI PRODUCTION",
-    imageSrc: "/projects/project4.png",
-  },
-  {
-    id: "michelle-dee",
-    title: "MICHELLE DEE GOWN TRANSFORMATION VFX BREAKDOWN",
-    category: "3D CGI PRODUCTION / EDITING & VFX / COMPOSITING",
-    imageSrc: "/projects/project5.png",
-  },
-  {
-    id: "bliss-lux",
-    title: "BLISS LUX FRAGRANCE",
-    category: "3D CGI PRODUCTION",
-    imageSrc: "/projects/project6.png",
-  },
-  {
-    id: "locally",
-    title: "LOCALLY 3D BILLBOARD",
-    category: "3D CGI PRODUCTION / VFX / COMPOSITING",
-    imageSrc: "/projects/project7.png",
-  },
-  {
-    id: "selecta-beat-the-init",
-    title: "SELECTA BEAT THE INIT",
-    category: "3D CGI PRODUCTION",
-    imageSrc: "/projects/project8.png",
-  },
-  {
-    id: "oppo-find",
-    title: "OPPO FIND N2 BILLBOARD",
-    category: "VFX / COMPOSITING",
-    imageSrc: "/projects/project9.png",
-  },
-  {
-    id: "sm-axcs",
-    title: "SM AXCS CGI BAG",
-    category: "3D CGI PRODUCTION",
-    imageSrc: "/projects/project10.png",
-  },
-];
 
 // ─── Components ───────────────────────────────────────────────────────────────
 
 function PortfolioTile({ item, index }: { item: PortfolioItem; index: number }) {
   const [hovered, setHovered] = useState(false);
+  const hasLink = !!item.url;
 
-  return (
-    <motion.div
-      variants={cardRevealItem}
-      className="group relative overflow-hidden bg-[#141414] cursor-pointer"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
+  const content = (
+    <>
       {/* Main image */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={item.imageSrc}
         alt={item.title}
-        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        loading="eager"
+        fetchPriority={index < 2 ? "high" : "auto"}
+        className="h-full w-full object-cover"
         style={{ aspectRatio: "16/10", minHeight: "280px" }}
       />
 
@@ -165,15 +107,17 @@ function PortfolioTile({ item, index }: { item: PortfolioItem; index: number }) 
       />
 
       {/* VIEW PROJECT button — appears on hover */}
-      <div
-        className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 ${
-          hovered ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        <button className="flex h-10 items-center justify-center rounded-[12px] border border-white bg-transparent px-5 text-sm font-bold uppercase tracking-wider text-white transition-colors duration-300 hover:border-[#F97316] hover:bg-[#F97316] sm:px-8">
-          VIEW PROJECT
-        </button>
-      </div>
+      {hasLink && (
+        <div
+          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 ${
+            hovered ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <span className="flex h-10 items-center justify-center rounded-[12px] border border-white bg-transparent px-5 text-sm font-bold uppercase tracking-wider text-white transition-colors duration-300 hover:border-[#F97316] hover:bg-[#F97316] sm:px-8">
+            VIEW PROJECT
+          </span>
+        </div>
+      )}
 
       {/* Bottom info overlay — always visible */}
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent px-5 py-6 sm:px-6 sm:py-7">
@@ -181,9 +125,26 @@ function PortfolioTile({ item, index }: { item: PortfolioItem; index: number }) 
           {item.title}
         </h3>
         <span className="inline-block rounded-sm bg-white/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-white/80 sm:text-[12px]">
-          {item.category}
+          {item.tags}
         </span>
       </div>
+    </>
+  );
+
+  return (
+    <motion.div
+      variants={cardRevealItem}
+      className="group relative overflow-hidden bg-[#141414] cursor-pointer"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {hasLink ? (
+        <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
+          {content}
+        </a>
+      ) : (
+        content
+      )}
     </motion.div>
   );
 }
@@ -193,6 +154,8 @@ function PortfolioTile({ item, index }: { item: PortfolioItem; index: number }) 
 export default function PortfolioPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [loaderDone, setLoaderDone] = useState(false);
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -202,8 +165,19 @@ export default function PortfolioPage() {
     return () => mq.removeEventListener("change", update);
   }, []);
 
+  useEffect(() => {
+    fetch("/api/portfolio")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setPortfolioItems(data);
+      })
+      .catch(() => {});
+  }, []);
+
   return (
-    <div className="bg-[#0A0A0A] text-white min-h-screen flex flex-col">
+    <>
+      <PageLoader onComplete={() => setLoaderDone(true)} />
+    <div className="bg-[#0A0A0A] text-white min-h-screen flex flex-col" style={{ visibility: loaderDone ? undefined : "hidden" }}>
       {/* ─── Mobile Menu Overlay ──────────────────────────────────── */}
       <AnimatePresence initial={false} mode="wait">
         {menuOpen && (
@@ -328,11 +302,16 @@ export default function PortfolioPage() {
           className="grid grid-cols-1 sm:grid-cols-2"
           variants={staggerContainer}
           initial={reduceMotion ? "show" : "hidden"}
-          animate="show"
+          animate={reduceMotion ? "show" : (loaderDone ? "show" : "hidden")}
         >
           {portfolioItems.map((item, i) => (
             <PortfolioTile key={item.id} item={item} index={i} />
           ))}
+          {portfolioItems.length === 0 && (
+            <div className="col-span-2 flex items-center justify-center py-32 text-white/20 text-sm">
+              Loading portfolio…
+            </div>
+          )}
         </motion.div>
       </main>
 
@@ -487,5 +466,6 @@ export default function PortfolioPage() {
         </div>
       </motion.footer>
     </div>
+    </>
   );
 }

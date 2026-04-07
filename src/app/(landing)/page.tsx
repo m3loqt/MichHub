@@ -2079,14 +2079,14 @@ export default function Page() {
           <div className="mb-4 flex flex-col items-center">
             <Link
               href="/"
-              className="relative block h-[5rem] w-[min(100%,300px)] shrink-0 sm:h-[5.5rem] sm:w-[340px]"
+              className="relative mx-auto block h-[5.5rem] w-[min(90vw,320px)] shrink-0 sm:h-[6.5rem] sm:w-[380px]"
             >
               <Image
                 src="/logoalt.svg"
                 alt="MichHub"
                 fill
                 className="object-contain object-center"
-                sizes="340px"
+                sizes="(min-width: 640px) 380px, 320px"
               />
             </Link>
           </div>

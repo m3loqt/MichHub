@@ -583,7 +583,7 @@ function ProjectCard({
           className="absolute inset-0 h-full w-full object-cover"
         />
         {/* Base dark overlay */}
-        <div className="absolute inset-0 bg-black/30" />
+        <div className="absolute inset-0 bg-black/10" />
         {/* Hover darkening */}
         <div
           className={`absolute inset-0 bg-black/30 transition-opacity duration-500 ${hovered ? "opacity-100" : "opacity-0"}`}

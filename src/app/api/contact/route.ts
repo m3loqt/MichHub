@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { checkRateLimit } from "@/lib/rate-limit";
 
-const TO_EMAIL = "angelomelcortes06@gmail.com";
+const TO_EMAIL = "admin@michhub.com";
 const FROM_EMAIL = "MichHub Studios <noreply@michhub.com>";
 
 export async function POST(request: NextRequest) {
@@ -47,13 +47,27 @@ export async function POST(request: NextRequest) {
       subject: `New inquiry from ${safeName}`,
       html: `
         <!DOCTYPE html>
-        <html lang="en">
-        <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+        <html lang="en" style="color-scheme:light;">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1">
+          <meta name="color-scheme" content="light">
+          <meta name="supported-color-schemes" content="light">
+          <style>
+            :root { color-scheme: light; }
+            * { color-scheme: light; }
+            @media (prefers-color-scheme: dark) {
+              body, table, td, div, p, a, h1 { background-color: #ffffff !important; color: inherit !important; }
+              .email-wrapper { background: #f4f4f5 !important; }
+              .email-card { background: #ffffff !important; border-color: #e5e7eb !important; }
+            }
+          </style>
+        </head>
         <body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
-          <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:40px 16px;">
+          <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:40px 16px;">
             <tr>
               <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;border:1px solid #e5e7eb;overflow:hidden;">
+                <table class="email-card" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;border:1px solid #e5e7eb;overflow:hidden;">
                   <tr>
                     <td style="padding:36px 40px 28px;">
                       <img src="https://michhub.com/logo-black.svg" alt="MichHub Studios" height="42" style="display:block;height:42px;">

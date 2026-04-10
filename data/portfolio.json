@@ -49,20 +49,12 @@
       "order": 5
     },
     {
-      "id": "locally",
-      "title": "LOCALLY 3D BILLBOARD",
-      "tags": "3D CGI PRODUCTION / VFX / COMPOSITING",
-      "imageSrc": "/projects/project7.png",
-      "url": "",
-      "order": 6
-    },
-    {
       "id": "selecta-beat-the-init",
       "title": "SELECTA BEAT THE INIT",
       "tags": "3D CGI PRODUCTION",
       "imageSrc": "/projects/project8.png",
       "url": "",
-      "order": 7
+      "order": 6
     },
     {
       "id": "oppo-find",
@@ -70,7 +62,7 @@
       "tags": "VFX / COMPOSITING",
       "imageSrc": "/projects/project9.png",
       "url": "",
-      "order": 8
+      "order": 7
     },
     {
       "id": "sm-axcs",
@@ -78,7 +70,7 @@
       "tags": "3D CGI PRODUCTION",
       "imageSrc": "/projects/project10.png",
       "url": "",
-      "order": 9
+      "order": 8
     }
   ]
 }

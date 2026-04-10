@@ -136,7 +136,7 @@ const problemCards = [
     num: "01",
     title: "VISUALS THAT DON'T CONVERT",
     body: "Significant budgets allocated to campaigns that look competent but fail to stand out. The content gets published, performs below benchmark, and leaves no lasting brand impression in the market. The issue isn't the strategy, it's the execution quality.",
-    image: "/problem/problem1.jpg",
+    image: "/problem/problem1.webp",
   },
   {
     num: "02",
@@ -292,6 +292,7 @@ function IndustryProblemCard({
         alt=""
         fill
         className="object-cover object-center"
+        sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
         aria-hidden
       />
       {/* Gradient overlay */}
@@ -330,7 +331,7 @@ const capabilityCards = [
     description:
       "Photorealistic product visualization, character simulation, and environment builds for commercial production and brand communications.",
     tags: ["3D", "HOUDINI", "BLENDER"],
-    image: "/capabilities/cgi.jpg",
+    image: "/capabilities/cgi.webp",
   },
   {
     title: "MOTION DESIGN",
@@ -459,7 +460,7 @@ const defaultPortfolioProjects = [
     title: "THREE FLAVOR UNIVERSES. FULL CGI. BROADCAST-READY.",
     description:
       "Cinema-quality CGI montages for three hero flavors — Crunchy Choco Malt, Avocado Dream, and New York Cheesecake. Full pipeline from Houdini simulations to Blender rendering to After Effects compositing. Delivered on a tight broadcast deadline.",
-    imageSrc: "/videos/work1.png",
+    imageSrc: "/videos/work1.webp",
     releaseDate: "March 2024",
   },
   {
@@ -467,7 +468,7 @@ const defaultPortfolioProjects = [
     title: "THREE FLAVOR UNIVERSES. FULL CGI. BROADCAST-READY.",
     description:
       "Cinema-quality CGI montages for three hero flavors — Crunchy Choco Malt, Avocado Dream, and New York Cheesecake. Full pipeline from Houdini simulations to Blender rendering to After Effects compositing. Delivered on a tight broadcast deadline.",
-    imageSrc: "/videos/work2.png",
+    imageSrc: "/videos/work2.webp",
     releaseDate: "June 2024",
   },
   {
@@ -501,7 +502,7 @@ const differenceCards = [
     title: "HOLLYWOOD PIPELINE",
     description:
       "Nuke, Houdini, Blender, PFTrack. The same tools used by the world's top VFX houses applied to your brand's advantage.",
-    image: "/difference/diff2.jpg",
+    image: "/difference/diff2.webp",
   },
   {
     Icon: Briefcase,
@@ -1889,7 +1890,7 @@ export default function Page() {
         id="contact"
         className="relative flex min-h-[50dvh] flex-col justify-center overflow-hidden scroll-mt-20 px-5 py-10 sm:px-8 sm:py-12 lg:px-10 lg:py-16 xl:px-16"
         style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.32), rgba(0,0,0,0.42)), url('/cta.png'), ${SECTION_ORANGE_FLOW_GRADIENT}`,
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.32), rgba(0,0,0,0.42)), url('/cta.webp'), ${SECTION_ORANGE_FLOW_GRADIENT}`,
           backgroundSize: "cover, cover, cover",
           backgroundPosition: "center, center, center",
         }}

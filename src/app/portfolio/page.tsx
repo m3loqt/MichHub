@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X, Phone, Mail, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ShowreelDropdown } from "@/components/ShowreelDropdown";
 import { brandEase, staggerContainer, cardRevealItem } from "@/lib/motion-presets";
 import dynamic from "next/dynamic";
 
@@ -210,6 +211,29 @@ export default function PortfolioPage() {
                   {label}
                 </Link>
               ))}
+              <div className="flex flex-col items-center gap-3 pt-1">
+                <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/30">View our Showreels</span>
+                <div className="flex flex-col items-center gap-2">
+                  <a
+                    href="https://www.instagram.com/reel/DWDiaxBjlOa/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMenuOpen(false)}
+                    className="text-[13px] font-bold uppercase tracking-wider text-white/60 transition-colors hover:text-white"
+                  >
+                    2026
+                  </a>
+                  <a
+                    href="https://www.instagram.com/reel/DBQcn9fu9Qq/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMenuOpen(false)}
+                    className="text-[13px] font-bold uppercase tracking-wider text-white/60 transition-colors hover:text-white"
+                  >
+                    2024
+                  </a>
+                </div>
+              </div>
             </nav>
             <div className="shrink-0 border-t border-white/[0.08] px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-5">
               <div className="flex items-center justify-center gap-10">
@@ -255,7 +279,7 @@ export default function PortfolioPage() {
       </nav>
 
       {/* ─── Desktop Nav ──────────────────────────────────────────── */}
-      <nav className="hidden lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center lg:gap-4 relative z-20 px-10 xl:px-16 2xl:px-20 pt-8 max-w-[1280px] xl:max-w-[1440px] 2xl:max-w-[1520px] w-full mx-auto">
+      <nav className="hidden lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center lg:gap-4 relative z-50 px-10 xl:px-16 2xl:px-20 pt-8 max-w-[1280px] xl:max-w-[1440px] 2xl:max-w-[1520px] w-full mx-auto">
         <div className="flex justify-start items-center min-w-0">
           <Link
             href="/"
@@ -286,7 +310,8 @@ export default function PortfolioPage() {
             </Link>
           ))}
         </div>
-        <div className="flex justify-end items-center min-w-0">
+        <div className="flex justify-end items-center gap-2 min-w-0">
+          <ShowreelDropdown />
           <Link href="/#contact-form">
             <Button className="flex h-10 shrink-0 items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-sm font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:px-8">
               Inquire Now

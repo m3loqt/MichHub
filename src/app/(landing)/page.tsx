@@ -16,6 +16,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { AnimatedSection } from "@/components/AnimatedSection";
+import { ShowreelDropdown } from "@/components/ShowreelDropdown";
 import { JumblingMetric } from "@/components/JumblingMetric";
 
 // Never SSR the loader — avoids any server/client HTML mismatch
@@ -141,13 +142,13 @@ const problemCards = [
     num: "02",
     title: "VENDORS WHO DON'T UNDERSTAND BRANDS",
     body: "The production brief is clear. The final output is template-level work — generic motion graphics, stock-style compositions, and off-brand colour choices that undermine the identity you spent years building. You paid for custom. You got commodity.",
-    image: "/problem/problem2.jpg",
+    image: "/problem/vendors.jpg",
   },
   {
     num: "03",
     title: "NO CREATIVE CONTINUITY",
     body: "Every campaign feels like it came from a different studio. Inconsistent visual language, shifting aesthetics, and a lack of brand coherence across touchpoints erodes trust and dilutes the equity you've built. Great brands demand a consistent visual standard.",
-    image: "/problem/problem3.jpg",
+    image: "/problem/nocreativity.webp",
   },
 ];
 
@@ -281,23 +282,30 @@ function IndustryProblemCard({
           "max-xl:[scroll-snap-align:none]",
         className
       )}
-      style={{
-        backgroundImage: [
-          "linear-gradient(to top, rgba(6,6,6,1) 0%, rgba(6,6,6,0.97) 18%, rgba(6,6,6,0.88) 35%, rgba(6,6,6,0.6) 55%, rgba(6,6,6,0.2) 75%, rgba(6,6,6,0) 100%)",
-          `url('${card.image}')`,
-        ].join(", "),
-        backgroundSize: "cover, cover",
-        backgroundPosition: "center, center",
-        backgroundRepeat: "no-repeat, no-repeat",
-      }}
       aria-hidden={decorativeClone ? true : undefined}
       data-problem-card={decorativeClone ? undefined : card.num}
       data-problem-clone={cloneMarker}
     >
-      <span className="font-display flex-none text-[#F97316] text-[44px] leading-none sm:text-[48px] lg:text-[64px]">
+      {/* Background photo — using <Image> avoids inline url() which causes SSR hydration mismatch */}
+      <Image
+        src={card.image}
+        alt=""
+        fill
+        className="object-cover object-center"
+        aria-hidden
+      />
+      {/* Gradient overlay */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to top, rgba(6,6,6,1) 0%, rgba(6,6,6,0.97) 18%, rgba(6,6,6,0.88) 35%, rgba(6,6,6,0.6) 55%, rgba(6,6,6,0.2) 75%, rgba(6,6,6,0) 100%)",
+        }}
+      />
+      <span className="relative font-display flex-none text-[#F97316] text-[44px] leading-none sm:text-[48px] lg:text-[64px]">
         {card.num}
       </span>
-      <div className="mt-auto flex flex-col pt-6 sm:pt-5">
+      <div className="relative mt-auto flex flex-col pt-6 sm:pt-5">
         <h3 className="mb-2 text-[15px] font-bold uppercase leading-snug text-white sm:text-[16px] lg:text-[18px]">
           {card.title}
         </h3>
@@ -1039,6 +1047,29 @@ export default function Page() {
                 </a>
               )
             ))}
+            <div className="flex flex-col items-center gap-3 pt-1">
+              <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/30">View our Showreels</span>
+              <div className="flex flex-col items-center gap-2">
+                <a
+                  href="https://www.instagram.com/reel/DWDiaxBjlOa/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMenuOpen(false)}
+                  className="text-[13px] font-bold uppercase tracking-wider text-white/60 transition-colors hover:text-white"
+                >
+                  2026
+                </a>
+                <a
+                  href="https://www.instagram.com/reel/DBQcn9fu9Qq/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMenuOpen(false)}
+                  className="text-[13px] font-bold uppercase tracking-wider text-white/60 transition-colors hover:text-white"
+                >
+                  2024
+                </a>
+              </div>
+            </div>
           </nav>
           <div className="shrink-0 border-t border-white/[0.08] px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-5">
             <div className="flex items-center justify-center gap-10">
@@ -1121,7 +1152,7 @@ export default function Page() {
         </nav>
 
         {/* Desktop Nav — 1fr / auto / 1fr keeps links centered in the bar */}
-        <nav className="hidden lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center lg:gap-4 relative z-20 px-10 xl:px-16 2xl:px-20 pt-8 max-w-[1280px] xl:max-w-[1440px] 2xl:max-w-[1520px] w-full mx-auto">
+        <nav className="hidden lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center lg:gap-4 relative z-50 px-10 xl:px-16 2xl:px-20 pt-8 max-w-[1280px] xl:max-w-[1440px] 2xl:max-w-[1520px] w-full mx-auto">
           <div className="flex justify-start items-center min-w-0">
             <Link
               href="/"
@@ -1159,7 +1190,8 @@ export default function Page() {
               )
             ))}
           </div>
-          <div ref={inquireBtnRef} className="flex justify-end items-center min-w-0">
+          <div ref={inquireBtnRef} className="flex justify-end items-center gap-2 min-w-0">
+            <ShowreelDropdown />
             <Button
               onClick={() => scrollToSection("contact-form")}
               className="flex h-10 shrink-0 items-center justify-center rounded-[12px] border-transparent bg-[#F97316] px-5 text-sm font-bold uppercase tracking-wider text-white hover:bg-[#ea6c0a] sm:px-8"
@@ -1228,7 +1260,7 @@ export default function Page() {
             animate={reduceMotion ? "show" : (loaderDone ? "show" : "hidden")}
           >
             {[
-              { value: "50+", label: "PROJECTS" },
+              { value: "100+", label: "PROJECTS" },
               { value: "100%", label: "ON-TIME" },
               { value: "10+", label: "BRAND PARTNERS" },
             ].map((stat, i) => (
@@ -1626,7 +1658,7 @@ export default function Page() {
             whileInView="show"
             viewport={{ once: true, amount: 0.12 }}
           >
-            {portfolioProjects.map((project, i) => (
+            {portfolioProjects.map((project: (typeof defaultPortfolioProjects)[number], i: number) => (
               <motion.div key={i} variants={cardRevealItem}>
                 <ProjectCard {...project} />
               </motion.div>
@@ -1761,22 +1793,21 @@ export default function Page() {
 
           {/* Team stats */}
           <motion.div
-            className="grid grid-cols-3 max-w-[360px] sm:max-w-[480px] lg:max-w-[600px] xl:max-w-[720px] 2xl:max-w-[800px] mx-auto mb-10 sm:mb-12 lg:mb-14"
+            className="grid grid-cols-2 max-w-[260px] sm:max-w-[360px] lg:max-w-[440px] xl:max-w-[520px] 2xl:max-w-[580px] mx-auto mb-10 sm:mb-12 lg:mb-14"
             variants={staggerContainer}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.35 }}
           >
             {[
-              { value: "5+", label: "YEARS" },
-              { value: "10+", label: "YEARS" },
+              { value: "20+", label: "YEARS" },
               { value: "6", label: "DISCIPLINES" },
             ].map((stat, i) => (
               <motion.div
                 key={i}
                 variants={fadeUpItem}
                 className={`flex flex-col items-center gap-1 ${
-                  i === 1 ? "border-x border-white/[0.1]" : ""
+                  i === 1 ? "border-l border-white/[0.1]" : ""
                 }`}
               >
                 <JumblingMetric

@@ -49,20 +49,12 @@
       "order": 5
     },
     {
-      "id": "oppo-find",
-      "title": "OPPO FIND N2 BILLBOARD",
-      "tags": "VFX / COMPOSITING",
-      "imageSrc": "/projects/project9.png",
-      "url": "",
-      "order": 6
-    },
-    {
       "id": "sm-axcs",
       "title": "SM AXCS CGI BAG",
       "tags": "3D CGI PRODUCTION",
       "imageSrc": "/projects/project10.png",
       "url": "",
-      "order": 7
+      "order": 6
     }
   ]
 }

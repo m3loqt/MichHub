@@ -729,6 +729,10 @@ export default function Page() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [loaderDone, setLoaderDone] = useState(false);
+  // Guards framer-motion `initial` values from being applied during SSR.
+  // framer-motion v12 writes CSS custom properties to inline styles on the
+  // server; React then flags them as a hydration mismatch on the client.
+  const [mounted, setMounted] = useState(false);
   const [contactStatus, setContactStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [contactError, setContactError] = useState("");
 
@@ -766,27 +770,19 @@ export default function Page() {
   );
   const problemCardsScrollRef = useRef<HTMLDivElement>(null);
   const capabilityCardsScrollRef = useRef<HTMLDivElement>(null);
-  const inquireBtnRef = useRef<HTMLDivElement>(null);
 
   useHorizontalDragScroll(problemCardsScrollRef);
   useHorizontalDragScroll(capabilityCardsScrollRef);
 
   const scrollToSection = (id: string) => {
     setMenuOpen(false);
-    // Smooth scroll for single-page navigation with an offset.
-    // `scrollIntoView()` doesn't let us reliably apply offsets, so we read
-    // the element's `scroll-margin-top` (Tailwind `scroll-mt-*`) and subtract it.
-    // The extra downward offset matches the bottom of the "Inquire Now" navbar
-    // button so every scroll-to-contact lands exactly below it.
+    // There is no persistent sticky nav, so use a fixed top-padding (24px) for
+    // breathing room. Using getBoundingClientRect() on the in-hero nav button
+    // is unreliable — once scrolled past the hero its value goes negative.
     requestAnimationFrame(() => {
       const el = document.getElementById(id);
       if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const computed = window.getComputedStyle(el);
-      const scrollMarginTop = Number.parseFloat(computed.scrollMarginTop || "0");
-      const offset = Number.isFinite(scrollMarginTop) ? scrollMarginTop : 0;
-      const extraDown = inquireBtnRef.current ? inquireBtnRef.current.getBoundingClientRect().bottom : 60;
-      const top = window.scrollY + rect.top - offset + extraDown;
+      const top = window.scrollY + el.getBoundingClientRect().top - 24;
       window.scrollTo({ top, behavior: "smooth" });
     });
   };
@@ -797,6 +793,8 @@ export default function Page() {
       .then((data) => { if (Array.isArray(data) && data.length > 0) setPortfolioProjects(data); })
       .catch(() => { /* keep default data on error */ });
   }, []);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -1048,26 +1046,26 @@ export default function Page() {
                 </a>
               )
             ))}
-            <div className="flex flex-col items-center gap-3 pt-1">
+            <div className="flex flex-col items-center gap-4 pt-1">
               <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/30">View our Showreels</span>
-              <div className="flex flex-col items-center gap-2">
+              <div className="flex flex-col items-center gap-3">
                 <a
                   href="https://www.instagram.com/reel/DWDiaxBjlOa/"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setMenuOpen(false)}
-                  className="text-[13px] font-bold uppercase tracking-wider text-white/60 transition-colors hover:text-white"
+                  className="flex items-center gap-2 rounded-[10px] border border-white/20 px-6 py-2.5 text-sm font-bold uppercase tracking-wider text-white/80 transition-colors hover:border-white/40 hover:bg-white/5 hover:text-white min-[400px]:text-base"
                 >
-                  2026
+                  2026 Showreel
                 </a>
                 <a
                   href="https://www.instagram.com/reel/DBQcn9fu9Qq/"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setMenuOpen(false)}
-                  className="text-[13px] font-bold uppercase tracking-wider text-white/60 transition-colors hover:text-white"
+                  className="flex items-center gap-2 rounded-[10px] border border-white/20 px-6 py-2.5 text-sm font-bold uppercase tracking-wider text-white/80 transition-colors hover:border-white/40 hover:bg-white/5 hover:text-white min-[400px]:text-base"
                 >
-                  2024
+                  2025 Showreel
                 </a>
               </div>
             </div>
@@ -1191,7 +1189,7 @@ export default function Page() {
               )
             ))}
           </div>
-          <div ref={inquireBtnRef} className="flex justify-end items-center gap-2 min-w-0">
+          <div className="flex justify-end items-center gap-2 min-w-0">
             <ShowreelDropdown />
             <Button
               onClick={() => scrollToSection("contact-form")}
@@ -1206,7 +1204,7 @@ export default function Page() {
         <div className="relative z-20 flex flex-col flex-1 items-center justify-center px-5 sm:px-8 py-10 sm:py-12 lg:px-10 xl:px-16">
           <motion.div
             className="flex flex-col items-center text-center w-full max-w-[960px] lg:max-w-[1040px] xl:max-w-[1120px] mx-auto"
-            initial={reduceMotion ? false : { opacity: 0, y: 26 }}
+            initial={mounted && !reduceMotion ? { opacity: 0, y: 26 } : false}
             animate={reduceMotion ? undefined : (loaderDone ? { opacity: 1, y: 0 } : { opacity: 0, y: 26 })}
             transition={{ duration: 0.85, ease: brandEase, delay: 0.1 }}
           >
@@ -1257,7 +1255,7 @@ export default function Page() {
           <motion.div
             className="grid grid-cols-3 max-w-[1280px] xl:max-w-[1440px] 2xl:max-w-[1520px] mx-auto px-5 sm:px-8 lg:px-10 xl:px-16 py-5 sm:py-6 lg:py-8"
             variants={heroStatsStaggerContainer}
-            initial={reduceMotion ? "show" : "hidden"}
+            initial={mounted && !reduceMotion ? "hidden" : false}
             animate={reduceMotion ? "show" : (loaderDone ? "show" : "hidden")}
           >
             {[

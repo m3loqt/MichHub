@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 
 const REELS = [
   { label: "2026 Showreel", href: "https://www.instagram.com/reel/DWDiaxBjlOa/" },
-  { label: "2024 Showreel", href: "https://www.instagram.com/reel/DBQcn9fu9Qq/" },
+  { label: "2025 Showreel", href: "https://www.instagram.com/reel/DBQcn9fu9Qq/" },
 ];
 
 export function ShowreelDropdown() {
@@ -43,14 +43,14 @@ export function ShowreelDropdown() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 min-w-[190px] overflow-hidden rounded-[12px] border border-white/10 bg-[#111111] py-1 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+        <div className="absolute right-0 top-full z-50 mt-2 min-w-[210px] overflow-hidden rounded-[12px] border border-white/10 bg-[#111111] py-1 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
           {REELS.map(({ label, href }) => (
             <a
               key={label}
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between gap-3 px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-white/70 transition-colors hover:bg-white/5 hover:text-white"
+              className="flex items-center justify-between gap-3 px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-white/70 transition-colors hover:bg-white/5 hover:text-white xl:text-sm xl:py-4"
             >
               {label}
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>

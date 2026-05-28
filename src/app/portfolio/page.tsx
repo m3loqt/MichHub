@@ -230,7 +230,7 @@ export default function PortfolioPage() {
                     onClick={() => setMenuOpen(false)}
                     className="text-[13px] font-bold uppercase tracking-wider text-white/60 transition-colors hover:text-white"
                   >
-                    2024
+                    2025
                   </a>
                 </div>
               </div>

@@ -1686,7 +1686,7 @@ export default function Page() {
       ═══════════════════════════════════════════════════════════ */}
       <AnimatedSection
         id="about"
-        className="flex min-h-screen scroll-mt-20 flex-col items-stretch justify-center bg-[#0A0A0A] px-5 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24 xl:px-16"
+        className="flex scroll-mt-20 flex-col items-stretch bg-[#0A0A0A] px-5 py-10 sm:px-8 sm:py-12 lg:px-10 lg:py-16 xl:px-16"
       >
         <div className="w-full max-w-[1280px] xl:max-w-[1440px] 2xl:max-w-[1520px] mx-auto">
           {/* Header */}
@@ -1766,7 +1766,7 @@ export default function Page() {
       ═══════════════════════════════════════════════════════════ */}
       <AnimatedSection
         id="team"
-        className="flex min-h-screen scroll-mt-20 flex-col justify-center overflow-x-hidden overflow-y-visible bg-[#0A0A0A] px-5 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24 xl:px-16"
+        className="flex scroll-mt-20 flex-col overflow-x-hidden overflow-y-visible bg-[#0A0A0A] px-5 pt-10 pb-20 sm:px-8 sm:pt-12 sm:pb-24 lg:px-10 lg:pt-16 lg:pb-32 xl:px-16"
         style={{ backgroundImage: SECTION_ORANGE_FLOW_GRADIENT }}
       >
         <div className="max-w-[1280px] xl:max-w-[1440px] 2xl:max-w-[1520px] mx-auto">

@@ -11,6 +11,16 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
+// ─── Testimonial types ────────────────────────────────────────────────────────
+
+interface Testimonial {
+  id: string;
+  quote: string;
+  author: string;
+  affiliation: string;
+  order: number;
+}
+
 // ─── Portfolio types ───────────────────────────────────────────────────────────
 
 interface PortfolioItem {
@@ -541,7 +551,7 @@ function AdminCard({
 
 export default function AdminPage() {
   const router = useRouter();
-  const [tab, setTab] = useState<"projects" | "portfolio">("projects");
+  const [tab, setTab] = useState<"projects" | "portfolio" | "testimonials">("projects");
 
   // ── Projects state ──
   const [projects, setProjects] = useState<Project[]>([]);
@@ -554,6 +564,15 @@ export default function AdminPage() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+
+  // ── Testimonials state ──
+  const [draftTestimonials, setDraftTestimonials] = useState<Testimonial[]>([]);
+  const [savedTestimonials, setSavedTestimonials] = useState<Testimonial[]>([]);
+  const [testimonialsLoading, setTestimonialsLoading] = useState(false);
+  const [testimonialsSaving, setTestimonialsSaving] = useState(false);
+  const [expandedTestimonialId, setExpandedTestimonialId] = useState<string | null>(null);
+  const [testimonialPreviewIndex, setTestimonialPreviewIndex] = useState(0);
+  const [previewFading, setPreviewFading] = useState(false);
 
   // ── Portfolio state ──
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
@@ -583,6 +602,22 @@ export default function AdminPage() {
       .catch((err) => showToast(err.message ?? "Failed to load projects", "error"))
       .finally(() => setLoading(false));
   }, [showToast]);
+
+  // Load testimonials when tab switches
+  useEffect(() => {
+    if (tab !== "testimonials" || draftTestimonials.length > 0) return;
+    setTestimonialsLoading(true);
+    fetch("/api/admin/testimonials")
+      .then(async (r) => {
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error ?? "Failed to load testimonials");
+        if (!Array.isArray(data)) throw new Error("Unexpected response format");
+        setDraftTestimonials(data);
+        setSavedTestimonials(data);
+      })
+      .catch((err) => showToast(err.message ?? "Failed to load testimonials", "error"))
+      .finally(() => setTestimonialsLoading(false));
+  }, [tab, draftTestimonials.length, showToast]);
 
   // Load portfolio items when tab switches to portfolio
   useEffect(() => {
@@ -698,6 +733,72 @@ export default function AdminPage() {
     setDeletePortfolioConfirm(null);
   }
 
+  // ── Testimonials handlers ──
+
+  function updateDraftField(id: string, field: keyof Testimonial, value: string) {
+    setDraftTestimonials((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, [field]: value } : t))
+    );
+  }
+
+  function toggleTestimonialExpand(id: string, index: number) {
+    if (expandedTestimonialId === id) {
+      setExpandedTestimonialId(null);
+    } else {
+      setExpandedTestimonialId(id);
+      setTestimonialPreviewIndex(index);
+    }
+  }
+
+  function addTestimonial() {
+    const newT: Testimonial = {
+      id: `t-${Date.now()}`,
+      quote: "",
+      author: "",
+      affiliation: "",
+      order: draftTestimonials.length,
+    };
+    setDraftTestimonials((prev) => [...prev, newT]);
+    setExpandedTestimonialId(newT.id);
+    setTestimonialPreviewIndex(draftTestimonials.length);
+  }
+
+  function deleteTestimonial(id: string) {
+    setDraftTestimonials((prev) =>
+      prev.filter((t) => t.id !== id).map((t, i) => ({ ...t, order: i }))
+    );
+    if (expandedTestimonialId === id) setExpandedTestimonialId(null);
+    setTestimonialPreviewIndex(0);
+  }
+
+  async function saveTestimonials() {
+    setTestimonialsSaving(true);
+    try {
+      const res = await fetch("/api/admin/testimonials", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ testimonials: draftTestimonials }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Save failed");
+      setSavedTestimonials(draftTestimonials);
+      showToast("Testimonials saved! Changes will be live in ~1 minute.");
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Save failed", "error");
+    } finally {
+      setTestimonialsSaving(false);
+    }
+  }
+
+  const testimonialsHaveChanges =
+    JSON.stringify(draftTestimonials) !== JSON.stringify(savedTestimonials);
+
+  useEffect(() => {
+    setPreviewFading(true);
+    const id = setTimeout(() => setPreviewFading(false), 160);
+    return () => clearTimeout(id);
+  }, [testimonialPreviewIndex]);
+
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
@@ -747,7 +848,7 @@ export default function AdminPage() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            {(saving || portfolioSaving) && (
+            {(saving || portfolioSaving || testimonialsSaving) && (
               <span className="flex items-center gap-1.5 text-xs text-white/40">
                 <svg
                   className="h-3.5 w-3.5 animate-spin"
@@ -813,7 +914,207 @@ export default function AdminPage() {
           >
             Portfolio
           </button>
+          <button
+            onClick={() => setTab("testimonials")}
+            className={`rounded-lg px-5 py-2 text-xs font-bold uppercase tracking-widest transition ${
+              tab === "testimonials"
+                ? "bg-[#F97316] text-white"
+                : "text-white/50 hover:text-white"
+            }`}
+          >
+            Testimonials
+          </button>
         </div>
+
+        {/* ── Testimonials Tab ── */}
+        {tab === "testimonials" && (
+          testimonialsLoading ? (
+            <p className="py-12 text-center text-sm text-white/40">Loading…</p>
+          ) : (
+            <div className="flex gap-8">
+
+              {/* Left — live preview (sticky) */}
+              <div className="w-[52%] shrink-0">
+                <div className="sticky top-8">
+                  <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-white/30">
+                    Live Preview
+                  </p>
+                  <div className="flex flex-col items-center border border-[#F97316] px-8 py-10 text-center">
+                    <p className="mb-8 text-[13px] font-bold uppercase tracking-[0.22em] text-[#F97316]">
+                      WHAT OUR CLIENTS SAY
+                    </p>
+                    {draftTestimonials.length > 0 && (() => {
+                      const t = draftTestimonials[testimonialPreviewIndex] ?? draftTestimonials[0];
+                      return (
+                        <div
+                          className={`w-full transition-opacity duration-150 ${previewFading ? "opacity-0" : "opacity-100"}`}
+                        >
+                          <div className="min-h-[96px]">
+                            <p className="text-[15px] leading-relaxed text-white">
+                              {t.quote
+                                ? `"${t.quote}"`
+                                : <span className="italic text-white/20">No quote yet…</span>}
+                            </p>
+                          </div>
+                          <p className="mt-6 text-[11px] font-bold uppercase tracking-[0.2em] text-white">
+                            {t.author || <span className="italic text-white/20">Author name</span>}
+                          </p>
+                          <p className="mt-1.5 text-[10px] uppercase tracking-[0.16em] text-white/40">
+                            {t.affiliation || <span className="italic">Position, Company</span>}
+                          </p>
+                        </div>
+                      );
+                    })()}
+                    <div className="mt-8 flex items-center gap-2.5">
+                      {draftTestimonials.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setTestimonialPreviewIndex(i)}
+                          className={`rounded-full transition-all duration-200 ${
+                            i === testimonialPreviewIndex
+                              ? "h-2 w-2 bg-white"
+                              : "h-1.5 w-1.5 bg-white/25 hover:bg-white/50"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right — accordion edit panels */}
+              <div className="flex-1 min-w-0">
+                <div className="space-y-2">
+                  {draftTestimonials.map((t, i) => {
+                    const isOpen = expandedTestimonialId === t.id;
+                    const inputCls = "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/30 outline-none transition focus:border-[#F97316] focus:ring-1 focus:ring-[#F97316]";
+                    const labelCls = "mb-1 block text-[10px] font-semibold uppercase tracking-widest text-white/40";
+                    return (
+                      <div
+                        key={t.id}
+                        className={`rounded-xl border transition-colors duration-200 ${
+                          isOpen ? "border-[#F97316]/40 bg-[#F97316]/5" : "border-white/10 bg-white/[0.03]"
+                        }`}
+                      >
+                        {/* Accordion header — div to avoid nested <button> */}
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => toggleTestimonialExpand(t.id, i)}
+                          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleTestimonialExpand(t.id, i); } }}
+                          className="flex w-full cursor-pointer items-center justify-between px-4 py-3.5 text-left select-none"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-white/30">
+                              {String(i + 1).padStart(2, "0")}
+                            </span>
+                            <span className="truncate text-sm font-semibold text-white">
+                              {t.author || `Testimonial ${i + 1}`}
+                            </span>
+                            {t.affiliation && (
+                              <span className="hidden truncate text-xs text-white/35 sm:block">
+                                {t.affiliation}
+                              </span>
+                            )}
+                          </div>
+                          <div className="ml-3 flex shrink-0 items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); deleteTestimonial(t.id); }}
+                              className="rounded-lg px-2 py-1 text-[11px] text-red-400/50 transition hover:bg-red-500/10 hover:text-red-400"
+                              aria-label="Delete testimonial"
+                            >
+                              ✕
+                            </button>
+                            <svg
+                              className={`h-4 w-4 text-white/30 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="m19 9-7 7-7-7" />
+                            </svg>
+                          </div>
+                        </div>
+
+                        {/* Accordion body — CSS grid animate */}
+                        <div className={`grid transition-all duration-300 ease-in-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+                          <div className="overflow-hidden">
+                            <div className="border-t border-white/10 px-4 pb-5 pt-4 space-y-3">
+                              <div>
+                                <label className={labelCls}>Quote</label>
+                                <textarea
+                                  rows={4}
+                                  value={t.quote}
+                                  onChange={(e) => updateDraftField(t.id, "quote", e.target.value)}
+                                  className={`${inputCls} resize-none`}
+                                  placeholder="Enter testimonial quote…"
+                                />
+                              </div>
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label className={labelCls}>Author Name</label>
+                                  <input
+                                    value={t.author}
+                                    onChange={(e) => updateDraftField(t.id, "author", e.target.value)}
+                                    className={inputCls}
+                                    placeholder="Full name"
+                                  />
+                                </div>
+                                <div>
+                                  <label className={labelCls}>Position, Company</label>
+                                  <input
+                                    value={t.affiliation}
+                                    onChange={(e) => updateDraftField(t.id, "affiliation", e.target.value)}
+                                    className={inputCls}
+                                    placeholder="CEO, Company Name"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Add testimonial */}
+                <button
+                  onClick={addTestimonial}
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-white/20 py-4 text-sm font-semibold text-white/40 transition hover:border-[#F97316]/40 hover:text-[#F97316]"
+                >
+                  <span className="text-lg leading-none">+</span> Add Testimonial
+                </button>
+
+                {/* Publish + Undo */}
+                <div className="mt-6 flex items-center justify-end gap-3">
+                  <div
+                    className={`transition-all duration-200 ${
+                      testimonialsHaveChanges
+                        ? "opacity-100 translate-y-0 pointer-events-auto"
+                        : "opacity-0 translate-y-1 pointer-events-none"
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setDraftTestimonials(savedTestimonials)}
+                      className="rounded-xl border border-white/20 px-5 py-2.5 text-sm font-semibold text-white/60 transition hover:bg-white/10"
+                    >
+                      Undo Changes
+                    </button>
+                  </div>
+                  <button
+                    onClick={saveTestimonials}
+                    disabled={testimonialsSaving}
+                    className="rounded-xl bg-[#F97316] px-6 py-2.5 text-sm font-bold uppercase tracking-wider text-white transition hover:bg-[#ea6c0a] disabled:opacity-50"
+                  >
+                    {testimonialsSaving ? "Saving…" : "Publish Changes"}
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          )
+        )}
 
         {/* ── Portfolio Tab ── */}
         {tab === "portfolio" && (

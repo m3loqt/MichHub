@@ -534,6 +534,30 @@ const rightRoles = [
 
 const footerLinks = ["Home", "Services", "Process", "Work", "About", "FAQs"];
 
+const defaultTestimonials = [
+  {
+    id: "t-1",
+    quote: "Outstanding job and exceeded all expectations. It was a pleasure to work with them on a second-first project and am looking forward to start the next one asap.",
+    author: "Larisa Pruski",
+    affiliation: "CEO, ABS-CBN",
+    order: 0,
+  },
+  {
+    id: "t-2",
+    quote: "MichHub brought our campaign to life in a way we couldn't have imagined. The quality was cinema-grade and the team was incredibly professional throughout.",
+    author: "James Reyes",
+    affiliation: "Brand Manager, Unilever",
+    order: 1,
+  },
+  {
+    id: "t-3",
+    quote: "From the first brief to final delivery, every checkpoint was met with precision. The visuals they produced set a new standard for our brand.",
+    author: "Sofia Tan",
+    affiliation: "Creative Lead, MSI",
+    order: 2,
+  },
+];
+
 /** Type treatment only (matches hero supporting copy) — combine with each section’s own max-width / alignment / spacing */
 /** Base + sm unchanged; lg+ is +4px vs former 18px (web / large screens only) */
 const SECTION_INTRO_FONT =
@@ -735,6 +759,14 @@ export default function Page() {
   const [mounted, setMounted] = useState(false);
   const [contactStatus, setContactStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [contactError, setContactError] = useState("");
+  const [testimonials, setTestimonials] = useState(defaultTestimonials);
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [testimonialTimerKey, setTestimonialTimerKey] = useState(0);
+
+  function goToTestimonial(i: number) {
+    setActiveTestimonial(i);
+    setTestimonialTimerKey((k) => k + 1);
+  }
 
   async function handleContactSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -756,6 +788,7 @@ export default function Page() {
       if (res.ok) {
         setContactStatus("success");
         form.reset();
+        window.fbq?.("track", "Contact");
       } else {
         setContactError(json?.error ?? "Something went wrong. Please try again.");
         setContactStatus("error");
@@ -994,6 +1027,25 @@ export default function Page() {
 
   useCarouselCenterScale(problemCardsScrollRef, reduceMotion);
   useCarouselCenterScale(capabilityCardsScrollRef, reduceMotion);
+
+  useEffect(() => {
+    fetch("/api/testimonials")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setTestimonials(data);
+          setActiveTestimonial(0);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setActiveTestimonial((i) => (i + 1) % testimonials.length);
+    }, 5000);
+    return () => clearInterval(id);
+  }, [testimonialTimerKey, testimonials.length]);
 
   return (
     <>
@@ -1882,7 +1934,69 @@ export default function Page() {
       </AnimatedSection>
 
       {/* ═══════════════════════════════════════════════════════════
-          SECTION 9 — MID-PAGE CTA BANNER
+          SECTION 9 — TESTIMONIALS
+      ═══════════════════════════════════════════════════════════ */}
+      <AnimatedSection
+        className="bg-[#0A0A0A] border-t border-white/[0.06] px-5 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24 xl:px-16"
+      >
+        <div className="mx-auto w-full max-w-[780px] sm:max-w-[980px] lg:max-w-[1200px] xl:max-w-[1380px]">
+          <div className="flex flex-col items-center border border-[#F97316] px-8 py-12 sm:px-14 sm:py-16 lg:px-24 lg:py-20">
+            <p className="mb-8 text-[18px] font-bold uppercase tracking-[0.22em] text-[#F97316] sm:mb-10 sm:text-[22px] lg:mb-12 lg:text-[26px]">
+              WHAT OUR CLIENTS SAY
+            </p>
+
+            {/* Quote */}
+            <div className="relative flex w-full items-center justify-center min-h-[200px] sm:min-h-[240px] lg:min-h-[280px] xl:min-h-[320px]">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTestimonial}
+                  initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reduceMotion ? undefined : { opacity: 0, y: -12 }}
+                  transition={{ duration: 0.45, ease: brandEase }}
+                  className="flex flex-col items-center text-center"
+                >
+                  <p className="text-[22px] leading-relaxed text-white sm:text-[28px] lg:text-[36px] xl:text-[40px]">
+                    &ldquo;{testimonials[activeTestimonial].quote}&rdquo;
+                  </p>
+                  <p className="mt-7 text-[12px] font-bold uppercase tracking-[0.22em] text-white sm:mt-8 sm:text-[13px] lg:mt-10 lg:text-[14px]">
+                    {testimonials[activeTestimonial].author}
+                  </p>
+                  <p className="mt-1.5 text-[11px] uppercase tracking-[0.18em] text-white/40 sm:text-[12px]">
+                    {testimonials[activeTestimonial].affiliation}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Dot indicators */}
+            <div
+              className="mt-12 flex items-center gap-3 sm:mt-14 lg:mt-16"
+              role="tablist"
+              aria-label="Testimonials"
+            >
+              {testimonials.map((_, i) => (
+                <button
+                  key={i}
+                  role="tab"
+                  aria-selected={i === activeTestimonial}
+                  aria-label={`Testimonial ${i + 1}`}
+                  onClick={() => goToTestimonial(i)}
+                  className={cn(
+                    "rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F97316] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]",
+                    i === activeTestimonial
+                      ? "h-2.5 w-2.5 bg-white"
+                      : "h-2 w-2 bg-white/25 hover:bg-white/50"
+                  )}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </AnimatedSection>
+
+      {/* ═══════════════════════════════════════════════════════════
+          SECTION 10 — MID-PAGE CTA BANNER
       ═══════════════════════════════════════════════════════════ */}
       <AnimatedSection
         id="contact"

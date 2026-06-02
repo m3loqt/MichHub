@@ -169,6 +169,83 @@ export async function updatePortfolioFile(
   if (!res.ok) throw new Error(`GitHub API error: ${res.status} ${await res.text()}`);
 }
 
+// ─── Testimonials file helpers ───────────────────────────────────────────────
+
+const testimonialFilePath = process.env.GITHUB_TESTIMONIALS_FILE_PATH ?? "data/testimonials.json";
+
+export interface Testimonial {
+  id: string;
+  quote: string;
+  author: string;
+  affiliation: string;
+  order: number;
+}
+
+const DEFAULT_TESTIMONIALS_CONTENT = JSON.stringify(
+  {
+    testimonials: [
+      {
+        id: "t-1",
+        quote: "Outstanding job and exceeded all expectations. It was a pleasure to work with them on a second-first project and am looking forward to start the next one asap.",
+        author: "Larisa Pruski",
+        affiliation: "CEO, ABS-CBN",
+        order: 0,
+      },
+      {
+        id: "t-2",
+        quote: "MichHub brought our campaign to life in a way we couldn't have imagined. The quality was cinema-grade and the team was incredibly professional throughout.",
+        author: "James Reyes",
+        affiliation: "Brand Manager, Unilever",
+        order: 1,
+      },
+      {
+        id: "t-3",
+        quote: "From the first brief to final delivery, every checkpoint was met with precision. The visuals they produced set a new standard for our brand.",
+        author: "Sofia Tan",
+        affiliation: "Creative Lead, MSI",
+        order: 2,
+      },
+    ],
+  },
+  null,
+  2
+);
+
+export async function getTestimonialsFile(): Promise<{ content: string; sha: string }> {
+  const url = `${GITHUB_API}/repos/${owner}/${repo}/contents/${testimonialFilePath}?ref=${branch}`;
+  const res = await fetch(url, { headers: headers(), cache: "no-store" });
+
+  if (res.status === 404) {
+    await updateTestimonialsFile(DEFAULT_TESTIMONIALS_CONTENT, "", "chore: initialise testimonials.json");
+    const res2 = await fetch(url, { headers: headers(), cache: "no-store" });
+    if (!res2.ok) throw new Error(`GitHub API error after seed: ${res2.status}`);
+    const data2 = (await res2.json()) as GitHubFileResponse;
+    const decoded2 = Buffer.from(data2.content.replace(/\n/g, ""), "base64").toString("utf-8");
+    return { content: decoded2, sha: data2.sha };
+  }
+
+  if (!res.ok) throw new Error(`GitHub API error: ${res.status} ${await res.text()}`);
+
+  const data = (await res.json()) as GitHubFileResponse;
+  const decoded = Buffer.from(data.content.replace(/\n/g, ""), "base64").toString("utf-8");
+  return { content: decoded, sha: data.sha };
+}
+
+export async function updateTestimonialsFile(
+  newContent: string,
+  sha: string,
+  commitMessage = "chore: update testimonials"
+): Promise<void> {
+  const url = `${GITHUB_API}/repos/${owner}/${repo}/contents/${testimonialFilePath}`;
+  const encoded = Buffer.from(newContent, "utf-8").toString("base64");
+
+  const body: Record<string, string> = { message: commitMessage, content: encoded, branch };
+  if (sha) body.sha = sha;
+
+  const res = await fetch(url, { method: "PUT", headers: headers(), body: JSON.stringify(body) });
+  if (!res.ok) throw new Error(`GitHub API error: ${res.status} ${await res.text()}`);
+}
+
 // ─── Projects file helpers ────────────────────────────────────────────────────
 
 /** Commit an updated projects.json back to the repo. */

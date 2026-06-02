@@ -1,0 +1,25 @@
+{
+  "testimonials": [
+    {
+      "id": "t-1",
+      "quote": "Outstanding job and exceeded all expectations. It was a pleasure to work with them on a second-first project and am looking forward to start the next one asap.",
+      "author": "Larisa Pruski",
+      "affiliation": "CEO, ABS-CBN",
+      "order": 0
+    },
+    {
+      "id": "t-2",
+      "quote": "MichHub brought our campaign to life in a way we couldn't have imagined. The quality was cinema-grade and the team was incredibly professional throughout.",
+      "author": "James Reyes",
+      "affiliation": "Brand Manager, Unilever",
+      "order": 1
+    },
+    {
+      "id": "t-3",
+      "quote": "From the first brief to final delivery, every checkpoint was met with precision. The visuals they produced set a new standard for our brand.",
+      "author": "Sofia Tan",
+      "affiliation": "Creative Lead, MSI",
+      "order": 2
+    }
+  ]
+}

@@ -772,6 +772,7 @@ export default function Page() {
     e.preventDefault();
     setContactStatus("sending");
     setContactError("");
+    window.fbq?.("track", "Lead");
     const form = e.currentTarget;
     const data = new FormData(form);
     try {

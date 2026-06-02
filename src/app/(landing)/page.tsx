@@ -492,31 +492,31 @@ const defaultPortfolioProjects = [
 const differenceCards = [
   {
     Icon: Clapperboard,
-    title: "CINEMATIC DNA",
+    title: "CINEMATIC DNA + AI PRECISION",
     description:
-      "Film-level standards on every project. Grounded realism, natural motion, invisible VFX.",
-    image: "/difference/diff1.avif",
+      "Film-level standards on every project. Grounded realism, natural motion, invisible VFX. AI-powered efficiency, human-crafted results.",
+    image: "/difference/CINEMATIC-GRADE.jpg",
   },
   {
     Icon: Hammer,
     title: "HOLLYWOOD PIPELINE",
     description:
       "Nuke, Houdini, Blender, PFTrack. The same tools used by the world's top VFX houses applied to your brand's advantage.",
-    image: "/difference/diff2.webp",
+    image: "/difference/HOLLYWOOD-PIPELINE.jpg",
   },
   {
     Icon: Briefcase,
     title: "ENTERPRISE READY",
     description:
       "Fixed-scope proposals, NDA-protected. Built for procurement teams who need accountability and creativity.",
-    image: "/difference/diff3.avif",
+    image: "/difference/ENTERPRISE-READY.jpg",
   },
   {
     Icon: Globe,
     title: "PH-BASED. GLOBAL GRADE.",
     description:
       "International-standard output at Philippine pricing. A cost advantage with zero compromise on quality, consistency, or professionalism.",
-    image: "/difference/diff4.jpg",
+    image: "/difference/PH-BASAED.jpg",
   },
 ];
 
@@ -1281,9 +1281,7 @@ export default function Page() {
                 "text-center max-w-[280px] sm:max-w-[380px] lg:max-w-[580px] xl:max-w-[640px] 2xl:max-w-[720px] mb-7 sm:mb-8 lg:mb-10",
               )}
             >
-              We create cinema-grade VFX, CGI, and motion design that doesn&apos;t
-              just perform, it positions your brand as the standard your entire
-              industry measures itself against.
+              From on-set production to cinema-grade VFX, CGI, and motion design. We create work that doesn&apos;t just perform, it positions your brand as the standard your entire industry measures itself against.
             </p>
             <div className="mx-auto flex w-full max-w-[min(100%,22rem)] flex-col items-stretch justify-center gap-3 px-1 sm:max-w-none sm:w-auto sm:flex-row sm:items-center sm:px-0">
               <Button

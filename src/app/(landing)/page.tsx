@@ -1941,7 +1941,7 @@ export default function Page() {
       >
         <div className="mx-auto w-full max-w-[780px] sm:max-w-[980px] lg:max-w-[1200px] xl:max-w-[1380px]">
           <div className="flex flex-col items-center border border-[#F97316] px-8 py-12 sm:px-14 sm:py-16 lg:px-24 lg:py-20">
-            <p className="mb-8 text-[18px] font-bold uppercase tracking-[0.22em] text-[#F97316] sm:mb-10 sm:text-[22px] lg:mb-12 lg:text-[26px]">
+            <p className="mb-8 text-center text-[13px] font-bold uppercase tracking-[0.22em] text-[#F97316] sm:mb-10 sm:text-[22px] lg:mb-12 lg:text-[26px]">
               WHAT OUR CLIENTS SAY
             </p>
 

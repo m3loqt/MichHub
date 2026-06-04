@@ -94,8 +94,8 @@ const menuSocialLinks: {
   href: string;
   Icon: ComponentType<{ className?: string }>;
 }[] = [
-  { label: "Facebook", href: "#", Icon: FacebookIcon },
-  { label: "Instagram", href: "#", Icon: InstagramIcon },
+  { label: "MICH Studios", href: "https://www.facebook.com/MediaInnovationCreativeHaven", Icon: FacebookIcon },
+  { label: "@michstudio.co", href: "https://www.instagram.com/michstudio.co/", Icon: InstagramIcon },
 ];
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -2203,6 +2203,21 @@ export default function Page() {
               {CONTACT_EMAIL}
             </a>
           </motion.p>
+
+          <motion.div variants={fadeUpItem} className="mt-4 flex justify-center gap-6 sm:mt-5">
+            {menuSocialLinks.map(({ label, href, Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-sm text-white/50 transition-colors hover:text-white/75 min-[400px]:text-base sm:text-lg md:text-xl lg:text-2xl"
+              >
+                <Icon className="h-3.5 w-3.5 shrink-0 min-[400px]:h-4 min-[400px]:w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 lg:h-7 lg:w-7" />
+                {label}
+              </a>
+            ))}
+          </motion.div>
         </motion.div>
       </AnimatedSection>
 
@@ -2285,8 +2300,8 @@ export default function Page() {
 
           {/* Social icons — Facebook & Instagram only */}
           <div className="flex items-center gap-6 mb-8">
-            {[FacebookIcon, InstagramIcon].map((Icon, i) => (
-              <a key={i} href="#" aria-label="Social link" className="text-white hover:text-white/70 transition-colors">
+            {menuSocialLinks.map(({ label, href, Icon }) => (
+              <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="text-white hover:text-white/70 transition-colors">
                 <Icon className="h-6 w-6" />
               </a>
             ))}
@@ -2373,8 +2388,8 @@ export default function Page() {
 
           {/* Social icons — Facebook & Instagram only */}
           <div className="flex items-center justify-center gap-6 mb-5">
-            {[FacebookIcon, InstagramIcon].map((Icon, i) => (
-              <a key={i} href="#" aria-label="Social link" className="text-white hover:text-white/70 transition-colors">
+            {menuSocialLinks.map(({ label, href, Icon }) => (
+              <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="text-white hover:text-white/70 transition-colors">
                 <Icon className="h-6 w-6" />
               </a>
             ))}
